@@ -6,10 +6,6 @@ import com.example.stock_order.infrastructure.persistence.entity.UserEntity;
 public final class UserMapper {
     private UserMapper() {}
 
-    public static User toDomain(User e) {
-        return e; 
-    }
-
     public static User toDomain(UserEntity e) {
         if (e == null) return null;
         User d = new User();

@@ -1,4 +1,4 @@
-package com.example.stock_order.application;
+package com.example.stock_order.application.usecases;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

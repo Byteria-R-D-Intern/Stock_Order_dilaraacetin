@@ -14,7 +14,7 @@ public class User{
     private Instant createdAt;
     private Instant updatedAt;
 
-    public enum Role { ADMİN, USER}
+    public enum Role { ADMIN, USER}
     
      public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

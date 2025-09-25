@@ -1,4 +1,4 @@
-package com.example.stock_order.application;
+package com.example.stock_order.application.usecases;
 
 import java.math.BigDecimal;
 

@@ -12,8 +12,8 @@ import com.example.stock_order.adapters.web.dto.product.AdjustStockRequest;
 import com.example.stock_order.adapters.web.dto.product.CreateProductRequest;
 import com.example.stock_order.adapters.web.dto.product.ProductResponse;
 import com.example.stock_order.adapters.web.dto.product.StockResponse;
-import com.example.stock_order.application.AdjustStockUseCase;
-import com.example.stock_order.application.CreateProductUseCase;
+import com.example.stock_order.application.usecases.AdjustStockUseCase;
+import com.example.stock_order.application.usecases.CreateProductUseCase;
 import com.example.stock_order.domain.model.Product;
 
 import jakarta.validation.Valid;
