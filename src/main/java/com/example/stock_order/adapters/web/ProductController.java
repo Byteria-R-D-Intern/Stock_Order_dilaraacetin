@@ -1,6 +1,7 @@
 package com.example.stock_order.adapters.web;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +17,11 @@ import com.example.stock_order.application.usecases.AdjustStockUseCase;
 import com.example.stock_order.application.usecases.CreateProductUseCase;
 import com.example.stock_order.domain.model.Product;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class ProductController {
     private final AdjustStockUseCase adjustStock;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> create(@RequestBody @Valid CreateProductRequest req) {
         var p = createProduct.handle(
                 req.sku(),

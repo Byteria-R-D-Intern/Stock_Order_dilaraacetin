@@ -27,10 +27,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/error").permitAll() 
-                .anyRequest().authenticated()
-            )
+            .requestMatchers("/api/auth/**", "/error").permitAll()
+            .requestMatchers(
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**"
+            ).permitAll()
+            .anyRequest().authenticated()
+        )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .httpBasic(Customizer.withDefaults());
         return http.build();
@@ -42,5 +46,13 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
+    }
+    @Bean
+    public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**"
+        );
     }
 }

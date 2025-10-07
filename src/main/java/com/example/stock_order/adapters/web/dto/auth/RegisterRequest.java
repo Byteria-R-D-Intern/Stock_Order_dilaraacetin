@@ -5,6 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
-        @Email @NotBlank String email,
-        @NotBlank @Size(min = 6, max = 100) String password
+        @Email(message = "Email formatı hatalı")
+        @NotBlank(message = "Email alanı boş bırakılamaz")
+        String email,
+
+        @NotBlank(message = "Password alanı boş bırakılamaz")
+        @Size(min = 8, max = 25, message = "Password uzunluğu 8-25 karakter olmalı")
+        /* 
+        @Pattern(
+           regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
+           message = "{Şifre en az 1 küçük, 1 büyük harf ve 1 rakam içermelidir}"
+        )
+        */
+        String password
 ) {}
