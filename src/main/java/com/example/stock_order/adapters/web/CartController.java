@@ -59,7 +59,6 @@ public class CartController {
         );
         return ResponseEntity.ok(resp);
     }
-    // stokta yeteri kadar ürün yoksa ona göre kullanıcıya hata döndür
     @PutMapping("/items")
     public ResponseEntity<CartResponse> updateQty(Authentication auth, @RequestBody @Valid UpdateQtyRequest req){
         var cart = cartService.updateQuantity(currentUserId(auth), req.productId(), req.quantity());
