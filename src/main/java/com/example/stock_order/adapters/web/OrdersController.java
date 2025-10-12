@@ -32,7 +32,7 @@ public class OrdersController {
     private Long currentUserId(Authentication auth){
         String email = (String) auth.getPrincipal();
         return users.findByEmail(email).map(u -> u.getId())
-                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                .orElseThrow(() -> new IllegalArgumentException("kullanıcı bulunamadı"));
     }
 
     @PostMapping("/checkout")
@@ -55,7 +55,7 @@ public class OrdersController {
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutResponse> get(Authentication auth, @PathVariable Long id){
         var userId = currentUserId(auth);
-        var order = orders.findById(id).orElseThrow(() -> new IllegalArgumentException("order not found"));
+        var order = orders.findById(id).orElseThrow(() -> new IllegalArgumentException("sipariş bulunamadı"));
         if (!order.getUserId().equals(userId)) {
             return ResponseEntity.status(403).build();
         }

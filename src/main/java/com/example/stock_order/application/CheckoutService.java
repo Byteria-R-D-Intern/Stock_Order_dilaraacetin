@@ -42,7 +42,7 @@ public class CheckoutService {
 
         var cart = cartService.getOrCreate(userId);
         if (cart.getItems().isEmpty()) {
-            throw new IllegalArgumentException("cart is empty");
+            throw new IllegalArgumentException("sepet boş");
         }
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -50,7 +50,7 @@ public class CheckoutService {
 
         for (var ci : cart.getItems()){
             Product p = products.findById(ci.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("product not found: " + ci.getProductId()));
+                .orElseThrow(() -> new IllegalArgumentException("ürün bulunamadı: " + ci.getProductId()));
 
             BigDecimal unit = p.getCurrentPrice();
             BigDecimal line = unit.multiply(BigDecimal.valueOf(ci.getQuantity()));
@@ -71,11 +71,11 @@ public class CheckoutService {
             try {
                 for (var oi : orderItems){
                     ProductStock s = stocks.findByProductId(oi.getProductId())
-                        .orElseThrow(() -> new IllegalStateException("stock row missing for product " + oi.getProductId()));
+                        .orElseThrow(() -> new IllegalStateException(oi.getProductId() + "numaralı ürünün stok bilgisi bulunamadı"));
 
                     long newQty = s.getQuantityOnHand() - oi.getQuantity();
                     if (newQty < 0) {
-                        throw new IllegalStateException("insufficient stock for product " + oi.getProductId());
+                        throw new IllegalStateException(oi.getProductId() + "numaralı ürün için yetersiz stok");
                     }
                     s.setQuantityOnHand(newQty);
                     stocks.save(s);  
@@ -104,6 +104,6 @@ public class CheckoutService {
             }
         }
 
-        throw new IllegalStateException("unexpected checkout failure");
+        throw new IllegalStateException("beklenmedik hata");
     }
 }
