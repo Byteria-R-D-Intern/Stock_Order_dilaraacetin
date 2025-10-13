@@ -31,7 +31,7 @@ public class CartController {
     private final UserRepository users;
 
     private Long currentUserId(Authentication auth){
-        String email = (String) auth.getPrincipal();
+        String email = auth.getName(); 
         return users.findByEmail(email).map(u -> u.getId())
                 .orElseThrow(() -> new IllegalArgumentException("kullanıcı bulunamadı"));
     }
@@ -59,6 +59,7 @@ public class CartController {
         );
         return ResponseEntity.ok(resp);
     }
+
     @PutMapping("/items")
     public ResponseEntity<CartResponse> updateQty(Authentication auth, @RequestBody @Valid UpdateQtyRequest req){
         var cart = cartService.updateQuantity(currentUserId(auth), req.productId(), req.quantity());
@@ -74,6 +75,6 @@ public class CartController {
     @DeleteMapping
     public ResponseEntity<Void> clear(Authentication auth){
         cartService.clear(currentUserId(auth));
-        return ResponseEntity.ok().build();   
+        return ResponseEntity.ok().build();
     }
 }
