@@ -46,6 +46,7 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/stock/increase")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StockResponse> increase(@PathVariable Long id,
                                                   @RequestBody @Valid AdjustStockRequest req) {
         var s = adjustStock.increase(id, req.delta());
@@ -53,6 +54,7 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/stock/decrease")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StockResponse> decrease(@PathVariable Long id,
                                                   @RequestBody @Valid AdjustStockRequest req) {
         var s = adjustStock.decrease(id, req.delta());

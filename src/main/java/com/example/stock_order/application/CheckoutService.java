@@ -124,8 +124,12 @@ public class CheckoutService {
     @Transactional(readOnly = true)
     public List<Order> listMyOrders() {
         Long userId = currentUserIdOrThrow();
-        List<Order> list = orders.findByUserId(userId);
-        list.sort(Comparator.comparing(Order::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+        java.util.List<Order> list = new java.util.ArrayList<>(orders.findByUserId(userId));
+        list.sort(
+            java.util.Comparator
+                .comparing(Order::getCreatedAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
+                .reversed()
+        );
         return list;
     }
 
