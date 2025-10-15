@@ -3,7 +3,6 @@ package com.example.stock_order.application;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -40,7 +39,6 @@ public class CheckoutService {
     private final OrderRepository orders;
     private final PaymentService payment;
     private final AuditLogService audit;
-
 
     @Transactional
     public Order checkout(String paymentToken) {
@@ -89,7 +87,7 @@ public class CheckoutService {
                         throw new IllegalArgumentException("insufficient stock for product " + oi.getProductId());
                     }
                     s.setQuantityOnHand(newQty);
-                    stocks.save(s); 
+                    stocks.save(s);
                 }
 
                 Order order = new Order();
@@ -124,7 +122,7 @@ public class CheckoutService {
     @Transactional(readOnly = true)
     public List<Order> listMyOrders() {
         Long userId = currentUserIdOrThrow();
-        java.util.List<Order> list = new java.util.ArrayList<>(orders.findByUserId(userId));
+        List<Order> list = new ArrayList<>(orders.findByUserId(userId));
         list.sort(
             java.util.Comparator
                 .comparing(Order::getCreatedAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
