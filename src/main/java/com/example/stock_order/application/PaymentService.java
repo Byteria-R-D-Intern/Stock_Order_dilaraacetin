@@ -14,13 +14,31 @@ public class PaymentService {
     private final TokenizationService tokenization;
 
     public ChargeResult charge(String token, BigDecimal amount, String currency) {
-        var rec = tokenization.validateToken(token); 
         if (amount == null || amount.signum() <= 0) {
             throw new IllegalArgumentException("invalid_amount");
         }
-        return new ChargeResult(UUID.randomUUID().toString(), "SUCCEEDED", amount, currency, rec.last4(), rec.brand());
+
+        var dt = tokenization.detokenize(token);
+
+        var res = new ChargeResult(
+                UUID.randomUUID().toString(),
+                "SUCCEEDED",
+                amount,
+                currency,
+                dt.last4(),
+                dt.brand()
+        );
+        tokenization.revoke(token);
+
+        return res;
     }
 
-    public record ChargeResult(String chargeId, String status, BigDecimal amount, String currency,
-                               String last4, String brand) {}
+    public record ChargeResult(
+            String chargeId,
+            String status,
+            BigDecimal amount,
+            String currency,
+            String last4,
+            String brand
+    ) {}
 }

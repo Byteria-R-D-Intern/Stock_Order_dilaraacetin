@@ -15,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.stock_order.util.CreditCardUtil;
@@ -24,7 +25,13 @@ public class TokenizationService {
 
     public record TokenRecord(String token, String last4, String brand, long expiresAtEpochMs) {}
 
-    private record EncryptedCard(String cipherB64, String ivB64, String last4, String brand, Instant expiresAt) {}
+    private record EncryptedCard(
+            String cipherB64,
+            String ivB64,
+            String last4,
+            String brand,
+            Instant expiresAt
+    ) {}
 
     private final Map<String, EncryptedCard> store = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
@@ -33,12 +40,12 @@ public class TokenizationService {
 
     @Autowired
     public TokenizationService(
-            @Value("${payment.token.ttl-seconds:60}") long ttlSeconds,
+            @Value("${payment.token.ttl-seconds:600}") long ttlSeconds,
             @Value("${payment.token.secret:}") String base64Key
     ) {
-        this.ttl = Duration.ofSeconds(ttlSeconds <= 0 ? 60 : ttlSeconds);
+        this.ttl = Duration.ofSeconds(ttlSeconds <= 0 ? 600 : ttlSeconds);
         byte[] keyBytes = decodeAesKey(base64Key);
-        if (keyBytes == null) {
+        if (keyBytes == null) { 
             keyBytes = new byte[32]; 
             random.nextBytes(keyBytes);
         }
@@ -52,7 +59,6 @@ public class TokenizationService {
             throw new IllegalArgumentException("invalid_pan_luhn");
 
         String token = generateToken();
-
         EncryptedCard enc = encrypt(pan);
         store.put(token, enc);
 
@@ -69,15 +75,35 @@ public class TokenizationService {
         return new TokenRecord(token, enc.last4(), enc.brand(), enc.expiresAt().toEpochMilli());
     }
 
+    public DetokenizeResult detokenize(String token) {
+        EncryptedCard enc = store.get(token);
+        if (enc == null) throw new IllegalArgumentException("token_not_found");
+        if (enc.expiresAt().isBefore(Instant.now())) {
+            store.remove(token);
+            throw new IllegalStateException("token_expired");
+        }
+        String pan = decrypt(enc);
+        return new DetokenizeResult(pan, enc.last4(), enc.brand());
+    }
+
     public void revoke(String token) { store.remove(token); }
+
+    @Scheduled(fixedDelay = 60_000)
+    public void evictExpired() {
+        Instant now = Instant.now();
+        store.entrySet().removeIf(e -> e.getValue().expiresAt().isBefore(now));
+    }
+
+    public record DetokenizeResult(String pan, String last4, String brand) {}
+
 
     private byte[] decodeAesKey(String base64Key) {
         if (base64Key == null || base64Key.isBlank()) return null;
         byte[] keyBytes = null;
-        try {
-            keyBytes = Base64.getDecoder().decode(base64Key);
-        } catch (IllegalArgumentException ignore) {
-            try { keyBytes = Base64.getUrlDecoder().decode(base64Key); } catch (IllegalArgumentException ignore2) { }
+        try { keyBytes = Base64.getDecoder().decode(base64Key); }
+        catch (IllegalArgumentException ignore) {
+            try { keyBytes = Base64.getUrlDecoder().decode(base64Key); }
+            catch (IllegalArgumentException ignore2) { }
         }
         if (keyBytes != null && (keyBytes.length == 16 || keyBytes.length == 24 || keyBytes.length == 32)) {
             return keyBytes;
@@ -113,6 +139,18 @@ public class TokenizationService {
             );
         } catch (Exception e) {
             throw new IllegalStateException("encrypt_error", e);
+        }
+    }
+
+    private String decrypt(EncryptedCard enc) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            byte[] iv = Base64.getDecoder().decode(enc.ivB64());
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
+            byte[] cipherBytes = Base64.getDecoder().decode(enc.cipherB64());
+            return new String(cipher.doFinal(cipherBytes), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new IllegalStateException("decrypt_error", e);
         }
     }
 }
