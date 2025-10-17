@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.application.AuditLogService;
 import com.example.stock_order.domain.model.ProductStock;
 import com.example.stock_order.domain.ports.repository.ProductRepository;
@@ -21,26 +22,24 @@ public class AdjustStockUseCase {
 
     @Transactional
     public ProductStock increase(Long productId, long delta) {
-        if (delta <= 0) throw new IllegalArgumentException("delta must be > 0");
-        products.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
-        var stock = stocks.findByProductId(productId).orElseThrow(() -> new IllegalStateException("stock row missing"));
+        if (delta <= 0) throw new IllegalArgumentException("delta > 0 olmalı");
+        products.findById(productId).orElseThrow(() -> new NotFoundException("ürün bulunamadı"));
+        var stock = stocks.findByProductId(productId).orElseThrow(() -> new NotFoundException("stok bulunamadı"));
         stock.setQuantityOnHand(stock.getQuantityOnHand() + delta);
         var saved = stocks.save(stock);
-
         audit.log("STOCK_INCREASED", "PRODUCT", productId, Map.of("delta", delta, "newQty", saved.getQuantityOnHand()));
         return saved;
     }
 
     @Transactional
     public ProductStock decrease(Long productId, long delta) {
-        if (delta <= 0) throw new IllegalArgumentException("delta must be > 0");
-        products.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
-        var stock = stocks.findByProductId(productId).orElseThrow(() -> new IllegalStateException("stock row missing"));
+        if (delta <= 0) throw new IllegalArgumentException("delta > 0");
+        products.findById(productId).orElseThrow(() -> new NotFoundException("ürün bulunamadı"));
+        var stock = stocks.findByProductId(productId).orElseThrow(() -> new NotFoundException("stok bulunamadı"));
         long newQty = stock.getQuantityOnHand() - delta;
-        if (newQty < 0) throw new IllegalStateException("insufficient stock");
+        if (newQty < 0) throw new IllegalStateException("yetersiz stok miktarı");
         stock.setQuantityOnHand(newQty);
         var saved = stocks.save(stock);
-
         audit.log("STOCK_DECREASED", "PRODUCT", productId, Map.of("delta", delta, "newQty", saved.getQuantityOnHand()));
         return saved;
     }

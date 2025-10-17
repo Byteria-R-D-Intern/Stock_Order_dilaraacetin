@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.domain.model.Cart;
 import com.example.stock_order.domain.model.CartItem;
 import com.example.stock_order.domain.ports.repository.CartRepository;
@@ -32,17 +33,12 @@ public class CartService {
         });
     }
 
-    @Transactional
+     @Transactional
     public Cart addItem(Long userId, Long productId, Long quantity) {
-        if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("quantity > 0 olmalı");
-        }
+        if (quantity == null || quantity <= 0) throw new IllegalArgumentException("quantity > 0 olmalı");
 
-        var p = products.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("ürün bulunamadı"));
-
-        var stock = stocks.findByProductId(productId)
-                .orElseThrow(() -> new IllegalStateException("stok bilgisi bulunamadı"));
+        var p = products.findById(productId).orElseThrow(() -> new NotFoundException("ürün bulunamadı"));
+        var stock = stocks.findByProductId(productId).orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı"));
 
         var cart = getOrCreate(userId);
 
@@ -52,14 +48,9 @@ public class CartService {
                 .sum();
 
         long desiredTotal = currentQtyInCart + quantity;
-        if (desiredTotal > stock.getQuantityOnHand()) {
-            throw new IllegalArgumentException("yetersiz stok miktarı");
-        }
+        if (desiredTotal > stock.getQuantityOnHand()) throw new IllegalArgumentException("yetersiz stok miktarı");
 
-        var existing = cart.getItems().stream()
-                .filter(i -> i.getProductId().equals(productId))
-                .findFirst();
-
+        var existing = cart.getItems().stream().filter(i -> i.getProductId().equals(productId)).findFirst();
         if (existing.isPresent()) {
             existing.get().setQuantity(desiredTotal);
         } else {
@@ -67,38 +58,27 @@ public class CartService {
             ci.setProductId(productId);
             ci.setSku(p.getSku());
             ci.setName(p.getName());
-            ci.setUnitPrice(p.getCurrentPrice()); 
+            ci.setUnitPrice(p.getCurrentPrice());
             ci.setQuantity(quantity);
             cart.getItems().add(ci);
         }
-
         return carts.save(cart);
     }
 
     @Transactional
     public Cart updateQuantity(Long userId, Long productId, Long quantity) {
-        if (quantity == null || quantity < 0) {
-            throw new IllegalArgumentException("quantity >= 0 olmalı");
-        }
+        if (quantity == null || quantity < 0) throw new IllegalArgumentException("quantity >= 0 olmalı");
 
-        var p = products.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("ürün bulunamadı"));
-        var stock = stocks.findByProductId(productId)
-                .orElseThrow(() -> new IllegalStateException("stok bilgisi bulunamadı"));
+        var p = products.findById(productId).orElseThrow(() -> new NotFoundException("ürün bulunamadı"));
+        var stock = stocks.findByProductId(productId).orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı"));
 
         var cart = getOrCreate(userId);
 
-        var itemOpt = cart.getItems().stream()
-                .filter(i -> i.getProductId().equals(productId))
-                .findFirst();
+        var itemOpt = cart.getItems().stream().filter(i -> i.getProductId().equals(productId)).findFirst();
 
         if (itemOpt.isEmpty()) {
-            if (quantity == 0) {
-                return cart;
-            }
-            if (quantity > stock.getQuantityOnHand()) {
-                throw new IllegalArgumentException("yetersiz stok miktarı");
-            }
+            if (quantity == 0) return cart;
+            if (quantity > stock.getQuantityOnHand()) throw new IllegalArgumentException("yetersiz stok miktarı");
             CartItem ci = new CartItem();
             ci.setProductId(productId);
             ci.setSku(p.getSku());
@@ -112,17 +92,12 @@ public class CartService {
         if (quantity == 0) {
             Iterator<CartItem> it = cart.getItems().iterator();
             while (it.hasNext()) {
-                if (it.next().getProductId().equals(productId)) {
-                    it.remove();
-                    break;
-                }
+                if (it.next().getProductId().equals(productId)) { it.remove(); break; }
             }
             return carts.save(cart);
         }
 
-        if (quantity > stock.getQuantityOnHand()) {
-            throw new IllegalArgumentException("yetersiz stok miktarı");
-        }
+        if (quantity > stock.getQuantityOnHand()) throw new IllegalArgumentException("yetersiz stok miktarı");
 
         var item = itemOpt.get();
         item.setQuantity(quantity);

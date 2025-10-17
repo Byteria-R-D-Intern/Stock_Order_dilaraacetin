@@ -39,4 +39,8 @@ public class ProductRepositoryJpaAdapter implements ProductRepository {
         var saved = jpa.save(ProductMapper.toEntity(product));
         return ProductMapper.toDomain(saved);
     }
+    @Override
+    public void deleteById(Long id) {
+        jpa.deleteById(id);
+    }
 }

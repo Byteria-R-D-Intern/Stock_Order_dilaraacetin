@@ -7,17 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.user.UpdateUserRoleRequest;
 import com.example.stock_order.application.AuditLogService;
-import com.example.stock_order.domain.model.Order;
-import com.example.stock_order.domain.model.ProductStock;
 import com.example.stock_order.domain.ports.repository.OrderRepository;
 import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 import com.example.stock_order.domain.ports.repository.UserRepository;
@@ -54,33 +50,6 @@ public class AdminController {
                     return ResponseEntity.ok().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("orders/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> changeStatus(@PathVariable Long id,
-                                             @RequestParam Order.Status status) {
-        var orderOpt = orders.findById(id);
-        if (orderOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        var order = orderOpt.get();
-        var prev = order.getStatus();
-
-        if (prev != Order.Status.CANCELLED && status == Order.Status.CANCELLED) {
-            for (var it : order.getItems()) {
-                ProductStock s = stocks.findByProductId(it.getProductId())
-                        .orElseThrow(() -> new IllegalStateException("stock row missing: " + it.getProductId()));
-                s.setQuantityOnHand(s.getQuantityOnHand() + it.getQuantity());
-                stocks.save(s);
-            }
-        }
-
-        order.setStatus(status);
-        orders.save(order);
-
-        audit.log("ORDER_STATUS_CHANGED", "ORDER", order.getId(),
-                Map.of("previous", prev.name(), "current", status.name()));
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/users/{id}/activate")

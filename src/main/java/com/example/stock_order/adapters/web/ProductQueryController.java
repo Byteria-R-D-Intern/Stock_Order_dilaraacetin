@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.product.ProductResponse;
 import com.example.stock_order.domain.ports.repository.ProductRepository;
+import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,11 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class ProductQueryController {
 
     private final ProductRepository products;
+    private final ProductStockRepository stocks;
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponse>> listActive() {
         var list = products.findAllActive().stream()
-                .map(ProductResponse::from)
+                .map(p -> {
+                    Long qoh = stocks.findByProductId(p.getId())
+                            .map(s -> s.getQuantityOnHand())
+                            .orElse(0L);
+                    return ProductResponse.of(p, qoh);
+                })
                 .toList();
         return ResponseEntity.ok(list);
     }
@@ -31,7 +38,12 @@ public class ProductQueryController {
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponse> get(@PathVariable Long id) {
         return products.findById(id)
-                .map(ProductResponse::from)
+                .map(p -> {
+                    Long qoh = stocks.findByProductId(p.getId())
+                            .map(s -> s.getQuantityOnHand())
+                            .orElse(0L);
+                    return ProductResponse.of(p, qoh);
+                })
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

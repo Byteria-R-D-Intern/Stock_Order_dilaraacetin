@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.domain.model.Cart;
 import com.example.stock_order.domain.model.CartItem;
 import com.example.stock_order.domain.model.Order;
@@ -44,21 +45,17 @@ public class CheckoutService {
     public Order checkout(String paymentToken) {
         Long userId = currentUserIdOrThrow();
 
-        Cart cart = carts.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("cart is empty"));
-        if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new IllegalArgumentException("cart is empty");
-        }
+        Cart cart = carts.findByUserId(userId).orElseThrow(() -> new NotFoundException("sepet boş"));
+        if (cart.getItems() == null || cart.getItems().isEmpty()) throw new NotFoundException("sepet boş");
 
         BigDecimal total = BigDecimal.ZERO;
         List<OrderItem> snapshotItems = new ArrayList<>();
 
         for (CartItem ci : cart.getItems()) {
             Product p = products.findById(ci.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("product not found: " + ci.getProductId()));
-            if (p.getStatus() != Product.Status.ACTIVE) {
-                throw new IllegalArgumentException("product is not active: " + p.getId());
-            }
+                    .orElseThrow(() -> new NotFoundException("ürün bulunamadı: " + ci.getProductId()));
+            if (p.getStatus() != Product.Status.ACTIVE) throw new IllegalArgumentException("ürün aktif değil: " + p.getId());
+
             BigDecimal unit = p.getCurrentPrice();
             BigDecimal line = unit.multiply(BigDecimal.valueOf(ci.getQuantity()));
             total = total.add(line);
@@ -80,12 +77,9 @@ public class CheckoutService {
             try {
                 for (OrderItem oi : snapshotItems) {
                     ProductStock s = stocks.findByProductId(oi.getProductId())
-                            .orElseThrow(() -> new IllegalStateException("stock row missing: " + oi.getProductId()));
-
+                            .orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı: " + oi.getProductId()));
                     long newQty = s.getQuantityOnHand() - oi.getQuantity();
-                    if (newQty < 0) {
-                        throw new IllegalArgumentException("insufficient stock for product " + oi.getProductId());
-                    }
+                    if (newQty < 0) throw new IllegalArgumentException("ürün için yetersiz stok miktarı " + oi.getProductId());
                     s.setQuantityOnHand(newQty);
                     stocks.save(s);
                 }
@@ -122,20 +116,16 @@ public class CheckoutService {
     @Transactional(readOnly = true)
     public List<Order> listMyOrders() {
         Long userId = currentUserIdOrThrow();
-        List<Order> list = new ArrayList<>(orders.findByUserId(userId));
-        list.sort(
-            java.util.Comparator
-                .comparing(Order::getCreatedAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
-                .reversed()
-        );
+        java.util.List<Order> list = new java.util.ArrayList<>(orders.findByUserId(userId));
+        list.sort(java.util.Comparator.comparing(Order::getCreatedAt,
+                java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())).reversed());
         return list;
     }
 
     @Transactional(readOnly = true)
     public Order getMyOrder(Long orderId) {
         Long userId = currentUserIdOrThrow();
-        Order o = orders.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("order not found"));
+        Order o = orders.findById(orderId).orElseThrow(() -> new NotFoundException("sipariş bulunamadı"));
         if (!o.getUserId().equals(userId)) {
             throw new org.springframework.security.authorization.AuthorizationDeniedException("Access Denied");
         }
@@ -149,7 +139,7 @@ public class CheckoutService {
         }
         String email = auth.getName();
         User u = users.findByEmail(email).orElseThrow(() ->
-                new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException("user not found"));
+                new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException("kullaıcı bulunamadı"));
         return u.getId();
     }
 }

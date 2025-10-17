@@ -20,7 +20,8 @@ public class OrderRepositoryJpaAdapter implements OrderRepository {
 
     private final SpringDataOrderJpaRepository jpa;
 
-    @Override public Order save(Order order){
+    @Override
+    public Order save(Order order){
         OrderEntity e = OrderMapper.toEntity(order);
         e.getItems().clear();
         if(order.getItems()!=null){
@@ -45,5 +46,9 @@ public class OrderRepositoryJpaAdapter implements OrderRepository {
 
     @Override public List<Order> findByUserId(Long userId){
         return jpa.findByUserId(userId).stream().map(OrderMapper::toDomain).toList();
+    }
+
+    @Override public Optional<Order> findByIdWithItems(Long id){
+        return jpa.findByIdWithItems(id).map(OrderMapper::toDomain);
     }
 }

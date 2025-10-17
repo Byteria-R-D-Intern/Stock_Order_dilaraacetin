@@ -35,4 +35,8 @@ public class ProductStockRepositoryJpaAdapter implements ProductStockRepository 
         var saved = stockJpa.save(entity);
         return ProductStockMapper.toDomain(saved);
     }
+    @Override
+    public void deleteByProductId(Long productId) {
+        stockJpa.deleteById(productId);
+    }
 }

@@ -127,4 +127,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(body(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", path, null));
     }
+
+    @ExceptionHandler({
+        java.util.NoSuchElementException.class,
+        jakarta.persistence.EntityNotFoundException.class,
+        org.springframework.dao.EmptyResultDataAccessException.class
+    })
+    public ResponseEntity<ErrorResponse> handleRepositoryNotFound(RuntimeException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(body(HttpStatus.NOT_FOUND, "Not Found", req.getRequestURI(), Map.of("detail", ex.getClass().getSimpleName())));
+    }
+    
+    @ExceptionHandler({
+        org.springframework.security.access.AccessDeniedException.class,
+        org.springframework.security.authorization.AuthorizationDeniedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleAccessDenied(Exception ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(body(HttpStatus.FORBIDDEN, "Access Denied", req.getRequestURI(), null));
+    }
 }
