@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.product.AdjustStockRequest;
@@ -25,10 +24,7 @@ import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.application.AuditLogService;
 import com.example.stock_order.application.usecases.AdjustStockUseCase;
 import com.example.stock_order.application.usecases.CreateProductUseCase;
-import com.example.stock_order.domain.model.Order;
 import com.example.stock_order.domain.model.Product;
-import com.example.stock_order.domain.model.ProductStock;
-import com.example.stock_order.domain.ports.repository.OrderRepository;
 import com.example.stock_order.domain.ports.repository.ProductRepository;
 import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 
@@ -49,7 +45,6 @@ public class ProductController {
     private final ProductRepository products;
     private final ProductStockRepository stocks;
     private final AuditLogService audit;
-    private final OrderRepository orders;
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> listActiveWithStock() {
@@ -133,30 +128,5 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("orders/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> changeStatus(@PathVariable Long id,
-                                             @RequestParam Order.Status status) {
-        var orderOpt = orders.findById(id);
-        if (orderOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        var order = orderOpt.get();
-        var prev = order.getStatus();
-
-        if (prev != Order.Status.CANCELLED && status == Order.Status.CANCELLED) {
-            for (var it : order.getItems()) {
-                ProductStock s = stocks.findByProductId(it.getProductId())
-                        .orElseThrow(() -> new IllegalStateException("stock row missing: " + it.getProductId()));
-                s.setQuantityOnHand(s.getQuantityOnHand() + it.getQuantity());
-                stocks.save(s);
-            }
-        }
-
-        order.setStatus(status);
-        orders.save(order);
-
-        audit.log("ORDER_STATUS_CHANGED", "ORDER", order.getId(),
-                Map.of("previous", prev.name(), "current", status.name()));
-        return ResponseEntity.ok().build();
-    }
+    
 }

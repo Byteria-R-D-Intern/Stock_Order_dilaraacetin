@@ -128,14 +128,10 @@ public class GlobalExceptionHandler {
                 .body(body(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", path, null));
     }
 
-    @ExceptionHandler({
-        java.util.NoSuchElementException.class,
-        jakarta.persistence.EntityNotFoundException.class,
-        org.springframework.dao.EmptyResultDataAccessException.class
-    })
-    public ResponseEntity<ErrorResponse> handleRepositoryNotFound(RuntimeException ex, HttpServletRequest req) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAppNotFound(NotFoundException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(body(HttpStatus.NOT_FOUND, "Not Found", req.getRequestURI(), Map.of("detail", ex.getClass().getSimpleName())));
+            .body(body(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI(), null));
     }
     
     @ExceptionHandler({
