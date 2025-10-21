@@ -22,6 +22,19 @@ public final class OrderMapper {
         d.setItems(e.getItems().stream().map(OrderMapper::toDomain).collect(Collectors.toList()));
         return d;
     }
+   
+    public static Order toDomainNoItems(OrderEntity e){
+        if(e==null) return null;
+        Order d = new Order();
+        d.setId(e.getId());
+        d.setUserId(e.getUserId());
+        d.setStatus(Order.Status.valueOf(e.getStatus().name()));
+        d.setTotalAmount(e.getTotalAmount());
+        d.setCreatedAt(e.getCreatedAt());
+        d.setUpdatedAt(e.getUpdatedAt());
+        d.setItems(java.util.List.of()); 
+        return d;
+    }
 
     public static OrderItem toDomain(OrderItemEntity e){
         if(e==null) return null;

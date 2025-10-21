@@ -51,4 +51,10 @@ public class OrderRepositoryJpaAdapter implements OrderRepository {
     @Override public Optional<Order> findByIdWithItems(Long id){
         return jpa.findByIdWithItems(id).map(OrderMapper::toDomain);
     }
+    @Override
+    public List<Order> findAll() {
+        return jpa.findAll().stream()
+                .map(OrderMapper::toDomainNoItems) 
+                .toList();
+    }
 }

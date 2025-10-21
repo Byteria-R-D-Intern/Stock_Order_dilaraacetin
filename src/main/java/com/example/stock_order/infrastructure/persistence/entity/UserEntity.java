@@ -19,10 +19,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-@Table(
-    name = "users",
-    indexes = { @Index(name = "ux_users_email", columnList = "email", unique = true) }
-)
+@Table(name = "users", indexes = { @Index(name = "ux_users_email", columnList = "email", unique = true) })
 public class UserEntity {
 
     public enum Role { ADMIN, USER }
@@ -45,7 +42,6 @@ public class UserEntity {
     private boolean active = true;
 
     private Integer failedLoginCount = 0;
-
     private Instant lockedUntil;
     private Instant lastLoginAt;
 
@@ -55,16 +51,15 @@ public class UserEntity {
     @Column(name="updated_at", nullable=false)
     private Instant updatedAt;
 
-    @Transient private Role   _origRole;
-    @Transient private Boolean _origActive;
-    @Transient private Instant _origLockedUntil;
+    @Transient private Role _loadedRole;
+    @Transient private Boolean _loadedActive;
+    @Transient private Instant _loadedLockedUntil;
 
-    @PostLoad
-    @PostPersist
-    private void rememberOriginals() {
-        this._origRole         = this.role;
-        this._origActive       = this.active;
-        this._origLockedUntil  = this.lockedUntil;
+    @PostLoad @PostPersist
+    private void rememberLoadedFields() {
+        this._loadedRole = this.role;
+        this._loadedActive = this.active;
+        this._loadedLockedUntil = this.lockedUntil;
     }
 
     @PrePersist
@@ -76,12 +71,9 @@ public class UserEntity {
 
     @PreUpdate
     void onUpdate() {
-        boolean criticalChanged =
-            !Objects.equals(this._origRole, this.role) ||
-            !Objects.equals(this._origActive, this.active) ||
-            !Objects.equals(this._origLockedUntil, this.lockedUntil);
-
-        if (criticalChanged) {
+        if (!Objects.equals(this._loadedActive, this.active)
+            || !Objects.equals(this._loadedRole, this.role)
+            || !Objects.equals(this._loadedLockedUntil, this.lockedUntil)) {
             this.updatedAt = Instant.now();
         }
     }

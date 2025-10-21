@@ -26,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    
+    private static final org.slf4j.Logger secureLog = org.slf4j.LoggerFactory.getLogger("SECURE_LOG");
+
 
     private ErrorResponse body(HttpStatus status, String message, String path, Map<String, Object> details) {
         return new ErrorResponse(Instant.now(), status.value(), status.getReasonPhrase(), message, path, details);

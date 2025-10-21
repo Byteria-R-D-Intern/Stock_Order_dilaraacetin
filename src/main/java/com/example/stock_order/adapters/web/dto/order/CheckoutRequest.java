@@ -1,7 +1,6 @@
 package com.example.stock_order.adapters.web.dto.order;
 
-import jakarta.validation.constraints.NotBlank;
-
 public record CheckoutRequest(
-    @NotBlank String paymentToken
+        String paymentToken,        // one-shot token (opsiyonel)
+        Long savedPaymentMethodId   // kayıtlı yöntem id (opsiyonel)
 ) {}

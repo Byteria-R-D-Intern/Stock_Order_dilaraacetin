@@ -24,13 +24,13 @@ import com.example.stock_order.domain.ports.repository.OrderRepository;
 import com.example.stock_order.domain.ports.repository.ProductRepository;
 import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 import com.example.stock_order.domain.ports.repository.UserRepository;
+import com.example.stock_order.infrastructure.persistence.springdata.SavedPaymentMethodJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CheckoutService {
-
     private static final int MAX_RETRY = 3;
 
     private final UserRepository users;
@@ -41,21 +41,40 @@ public class CheckoutService {
     private final PaymentService payment;
     private final AuditLogService audit;
 
+    private final SavedPaymentMethodJpaRepository savedPaymentMethodRepo;
+
     @Transactional
-    public Order checkout(String paymentToken) {
+    public Order checkoutWithToken(String paymentToken) {
+        if (paymentToken == null || paymentToken.isBlank()) {
+            throw new IllegalArgumentException("payment token missing");
+        }
+        return doCheckout(paymentToken, null);
+    }
+
+    @Transactional
+    public Order checkoutWithSaved(Long savedPaymentMethodId) {
+        if (savedPaymentMethodId == null) {
+            throw new IllegalArgumentException("saved payment method missing");
+        }
+        return doCheckout(null, savedPaymentMethodId);
+    }
+
+    private Order doCheckout(String paymentToken, Long savedPaymentMethodId) {
         Long userId = currentUserIdOrThrow();
 
         Cart cart = carts.findByUserId(userId).orElseThrow(() -> new NotFoundException("sepet boş"));
-        if (cart.getItems() == null || cart.getItems().isEmpty()) throw new NotFoundException("sepet boş");
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new NotFoundException("sepet boş");
+        }
 
         BigDecimal total = BigDecimal.ZERO;
         List<OrderItem> snapshotItems = new ArrayList<>();
-
         for (CartItem ci : cart.getItems()) {
             Product p = products.findById(ci.getProductId())
                     .orElseThrow(() -> new NotFoundException("ürün bulunamadı: " + ci.getProductId()));
-            if (p.getStatus() != Product.Status.ACTIVE) throw new IllegalArgumentException("ürün aktif değil: " + p.getId());
-
+            if (p.getStatus() != Product.Status.ACTIVE) {
+                throw new IllegalArgumentException("ürün aktif değil: " + p.getId());
+            }
             BigDecimal unit = p.getCurrentPrice();
             BigDecimal line = unit.multiply(BigDecimal.valueOf(ci.getQuantity()));
             total = total.add(line);
@@ -70,7 +89,13 @@ public class CheckoutService {
             snapshotItems.add(oi);
         }
 
-        payment.charge(paymentToken, total, "TRY");
+        if (savedPaymentMethodId != null) {
+            var spm = savedPaymentMethodRepo.findByIdAndUserIdAndActiveTrue(savedPaymentMethodId, userId)
+                    .orElseThrow(() -> new NotFoundException("payment method not found"));
+            payment.charge(spm.getToken(), total, "TRY", true);
+        } else {
+            payment.charge(paymentToken, total, "TRY", false);
+        }
 
         int attempt = 0;
         while (true) {
@@ -79,7 +104,9 @@ public class CheckoutService {
                     ProductStock s = stocks.findByProductId(oi.getProductId())
                             .orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı: " + oi.getProductId()));
                     long newQty = s.getQuantityOnHand() - oi.getQuantity();
-                    if (newQty < 0) throw new IllegalArgumentException("ürün için yetersiz stok miktarı " + oi.getProductId());
+                    if (newQty < 0) {
+                        throw new IllegalArgumentException("ürün için yetersiz stok miktarı " + oi.getProductId());
+                    }
                     s.setQuantityOnHand(newQty);
                     stocks.save(s);
                 }
@@ -99,7 +126,6 @@ public class CheckoutService {
 
                 audit.log("CHECKOUT_SUCCESS", "ORDER", saved.getId(),
                         java.util.Map.of("total", total, "itemCount", snapshotItems.size()));
-
                 return saved;
 
             } catch (ObjectOptimisticLockingFailureException ole) {
@@ -138,8 +164,8 @@ public class CheckoutService {
             throw new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException("unauthenticated");
         }
         String email = auth.getName();
-        User u = users.findByEmail(email).orElseThrow(() ->
-                new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException("kullaıcı bulunamadı"));
+        User u = users.findByEmail(email)
+                .orElseThrow(() -> new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException("kullaıcı bulunamadı"));
         return u.getId();
     }
 }
