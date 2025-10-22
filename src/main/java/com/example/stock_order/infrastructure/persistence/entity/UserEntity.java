@@ -51,6 +51,9 @@ public class UserEntity {
     @Column(name="updated_at", nullable=false)
     private Instant updatedAt;
 
+    @Column(name="phone_number", length=32)   
+    private String phoneNumber;
+
     @Transient private Role _loadedRole;
     @Transient private Boolean _loadedActive;
     @Transient private Instant _loadedLockedUntil;
@@ -87,4 +90,5 @@ public class UserEntity {
     public Instant getLastLoginAt() { return lastLoginAt; } public void setLastLoginAt(Instant lastLoginAt) { this.lastLoginAt = lastLoginAt; }
     public Instant getCreatedAt() { return createdAt; } public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; } public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public String getPhoneNumber() { return phoneNumber; } public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }

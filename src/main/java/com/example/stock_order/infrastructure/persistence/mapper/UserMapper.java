@@ -19,6 +19,7 @@ public final class UserMapper {
         d.setLastLoginAt(e.getLastLoginAt());
         d.setCreatedAt(e.getCreatedAt());
         d.setUpdatedAt(e.getUpdatedAt());
+        d.setPhoneNumber(e.getPhoneNumber());
         return d;
     }
 
@@ -35,6 +36,7 @@ public final class UserMapper {
         e.setLastLoginAt(d.getLastLoginAt());
         e.setCreatedAt(d.getCreatedAt());
         e.setUpdatedAt(d.getUpdatedAt());
+        e.setPhoneNumber(d.getPhoneNumber()); 
         return e;
     }
 }

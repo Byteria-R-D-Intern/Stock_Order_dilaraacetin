@@ -13,6 +13,7 @@ public class User{
     private Instant lastLoginAt;
     private Instant createdAt;
     private Instant updatedAt;
+    private String phoneNumber; 
 
     public enum Role { ADMIN, USER}
     
@@ -35,6 +36,8 @@ public class User{
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }}
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }}
 
 

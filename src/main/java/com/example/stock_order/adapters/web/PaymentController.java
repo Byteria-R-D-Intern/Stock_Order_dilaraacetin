@@ -1,5 +1,19 @@
 package com.example.stock_order.adapters.web;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.stock_order.adapters.web.dto.payment.SavedPaymentMethodResponse;
 import com.example.stock_order.adapters.web.dto.payment.TokenizeCardRequest;
 import com.example.stock_order.adapters.web.dto.payment.TokenizeCardResponse;
@@ -8,15 +22,9 @@ import com.example.stock_order.application.TokenizationService;
 import com.example.stock_order.domain.ports.repository.UserRepository;
 import com.example.stock_order.infrastructure.persistence.entity.SavedPaymentMethodEntity;
 import com.example.stock_order.infrastructure.persistence.springdata.SavedPaymentMethodJpaRepository;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -82,7 +90,7 @@ public class PaymentController {
         var opt = savedRepo.findByIdAndUserIdAndActiveTrue(id, uid);
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
         var e = opt.get();
-        e.setActive(false); // soft delete
+        e.setActive(false); 
         savedRepo.save(e);
         audit.log("PAYMENT_METHOD_DEACTIVATED", "PAYMENT_METHOD", e.getId(), java.util.Map.of("userId", uid));
         return ResponseEntity.noContent().build();

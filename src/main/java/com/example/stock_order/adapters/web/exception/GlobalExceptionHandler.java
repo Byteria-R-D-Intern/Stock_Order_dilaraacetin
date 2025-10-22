@@ -26,9 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
-    private static final org.slf4j.Logger secureLog = org.slf4j.LoggerFactory.getLogger("SECURE_LOG");
 
+    private static final org.slf4j.Logger SECURE_LOG =
+            org.slf4j.LoggerFactory.getLogger("SECURE");
 
     private ErrorResponse body(HttpStatus status, String message, String path, Map<String, Object> details) {
         return new ErrorResponse(Instant.now(), status.value(), status.getReasonPhrase(), message, path, details);
@@ -36,8 +36,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCred(InvalidCredentialsException ex, HttpServletRequest req) {
+        SECURE_LOG.warn("Invalid credentials at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(body(HttpStatus.UNAUTHORIZED, ex.getMessage(), req.getRequestURI(), null));
+                .body(body(HttpStatus.UNAUTHORIZED, "invalid_credentials", req.getRequestURI(), null));
     }
 
     @ExceptionHandler(AccountLockedException.class)
@@ -51,6 +52,7 @@ public class GlobalExceptionHandler {
                 + (remainingMin > 0 ? (" (~" + remainingMin + " dk kaldı)") : "");
 
         Map<String, Object> details = Map.of("lockedUntil", ex.getLockedUntil());
+        SECURE_LOG.warn("Account locked at {} : lockedUntil={}", req.getRequestURI(), ex.getLockedUntil());
         return ResponseEntity.status(423).body(body(HttpStatus.valueOf(423), msg, req.getRequestURI(), details));
     }
 
@@ -71,8 +73,9 @@ public class GlobalExceptionHandler {
                 detailMap.put(error.getObjectName(), error.getDefaultMessage());
             }
         }
+        SECURE_LOG.info("Validation failed (body) at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.badRequest()
-                .body(body(HttpStatus.BAD_REQUEST, "Validation failed", req.getRequestURI(), detailMap));
+                .body(body(HttpStatus.BAD_REQUEST, "validation_failed", req.getRequestURI(), detailMap));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -84,8 +87,9 @@ public class GlobalExceptionHandler {
                     "rejectedValue", v.getInvalidValue()
             ));
         }
+        SECURE_LOG.info("Validation failed (params) at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.badRequest()
-                .body(body(HttpStatus.BAD_REQUEST, "Validation failed", req.getRequestURI(), detailMap));
+                .body(body(HttpStatus.BAD_REQUEST, "validation_failed", req.getRequestURI(), detailMap));
     }
 
     @ExceptionHandler(BindException.class)
@@ -97,24 +101,44 @@ public class GlobalExceptionHandler {
                     "rejectedValue", error.getRejectedValue()
             ));
         }
+        SECURE_LOG.info("Bind error at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.badRequest()
-                .body(body(HttpStatus.BAD_REQUEST, "Validation failed", req.getRequestURI(), detailMap));
+                .body(body(HttpStatus.BAD_REQUEST, "validation_failed", req.getRequestURI(), detailMap));
     }
 
     @ExceptionHandler({
-        HttpMessageNotReadableException.class,
-        MethodArgumentTypeMismatchException.class,
-        MissingServletRequestParameterException.class
+            HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex, HttpServletRequest req) {
+        SECURE_LOG.warn("Bad request at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.badRequest()
-                .body(body(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null));
+                .body(body(HttpStatus.BAD_REQUEST, "bad_request", req.getRequestURI(), null));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArg(IllegalArgumentException ex, HttpServletRequest req) {
+        SECURE_LOG.warn("Illegal argument at {} : {}", req.getRequestURI(), ex.toString());
         return ResponseEntity.badRequest()
-                .body(body(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null));
+                .body(body(HttpStatus.BAD_REQUEST, "bad_request", req.getRequestURI(), null));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAppNotFound(NotFoundException ex, HttpServletRequest req) {
+        SECURE_LOG.warn("Not found at {} : {}", req.getRequestURI(), ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(body(HttpStatus.NOT_FOUND, "not_found", req.getRequestURI(), null));
+    }
+
+    @ExceptionHandler({
+        org.springframework.security.access.AccessDeniedException.class,
+        org.springframework.security.authorization.AuthorizationDeniedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleAccessDenied(Exception ex, HttpServletRequest req) {
+        SECURE_LOG.warn("Access denied at {} : {}", req.getRequestURI(), ex.toString());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(body(HttpStatus.FORBIDDEN, "access_denied", req.getRequestURI(), null));
     }
 
     @ExceptionHandler(Exception.class)
@@ -125,24 +149,9 @@ public class GlobalExceptionHandler {
             throw new RuntimeException(ex);
         }
 
-        log.error("Unhandled exception at {}: {}", path, ex.toString(), ex);
+        SECURE_LOG.error("Unhandled exception at {} : {}", path, ex.toString(), ex);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(body(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", path, null));
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleAppNotFound(NotFoundException ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(body(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI(), null));
-    }
-    
-    @ExceptionHandler({
-        org.springframework.security.access.AccessDeniedException.class,
-        org.springframework.security.authorization.AuthorizationDeniedException.class
-    })
-    public ResponseEntity<ErrorResponse> handleAccessDenied(Exception ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(body(HttpStatus.FORBIDDEN, "Access Denied", req.getRequestURI(), null));
+                .body(body(HttpStatus.INTERNAL_SERVER_ERROR, "unexpected_error", path, null));
     }
 }

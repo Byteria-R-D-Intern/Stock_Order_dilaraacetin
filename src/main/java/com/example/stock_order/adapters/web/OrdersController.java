@@ -27,44 +27,30 @@ public class OrdersController {
     private final CheckoutService checkoutService;
 
     @PostMapping("/checkout/token")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CheckoutResponse> checkoutWithToken(@RequestBody @Valid CheckoutWithTokenRequest req){
-        var order = checkoutService.checkoutWithToken(req.paymentToken());
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<CheckoutResponse> checkoutWithToken(@RequestBody @Valid CheckoutWithTokenRequest req){
+        var order = checkoutService.checkoutWithToken(req.paymentToken(), req.shippingAddressId()); // <-- eklendi
         var resp = new CheckoutResponse(
-                order.getId(),
-                order.getStatus().name(),
-                order.getTotalAmount(),
+                order.getId(), order.getStatus().name(), order.getTotalAmount(),
                 order.getItems().stream().map(i -> new CheckoutResponse.Item(
-                        i.getProductId(),
-                        i.getSku(),
-                        i.getName(),
-                        i.getUnitPrice(),
-                        i.getQuantity(),
-                        i.getLineTotal()
-                )).collect(Collectors.toList())
+                i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
+                )).collect(java.util.stream.Collectors.toList())
         );
         return ResponseEntity.ok(resp);
-    }
+}
 
-    @PostMapping("/checkout/saved")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CheckoutResponse> checkoutWithSaved(@RequestBody @Valid CheckoutWithSavedMethodRequest req){
-        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId());
+        @PostMapping("/checkout/saved")
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<CheckoutResponse> checkoutWithSaved(@RequestBody @Valid CheckoutWithSavedMethodRequest req){
+        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId(), req.shippingAddressId()); // <-- eklendi
         var resp = new CheckoutResponse(
-                order.getId(),
-                order.getStatus().name(),
-                order.getTotalAmount(),
+                order.getId(), order.getStatus().name(), order.getTotalAmount(),
                 order.getItems().stream().map(i -> new CheckoutResponse.Item(
-                        i.getProductId(),
-                        i.getSku(),
-                        i.getName(),
-                        i.getUnitPrice(),
-                        i.getQuantity(),
-                        i.getLineTotal()
-                )).collect(Collectors.toList())
+                i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
+                )).collect(java.util.stream.Collectors.toList())
         );
         return ResponseEntity.ok(resp);
-    }
+        }
 
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutResponse> get(@PathVariable Long id){

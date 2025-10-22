@@ -1,0 +1,116 @@
+2025-10-22 09:09:18.140 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2025-10-22 09:09:18.284 INFO  [main] com.example.stock_order.StockOrderApplication - Starting StockOrderApplication using Java 22 with PID 4916 (C:\Users\Monster PC\Desktop\Stock_Order_dilaraacetin-main\target\classes started by Monster PC in C:\Users\Monster PC\Desktop\Stock_Order_dilaraacetin-main)
+2025-10-22 09:09:18.286 INFO  [main] com.example.stock_order.StockOrderApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-22 09:09:22.110 INFO  [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-22 09:09:22.420 INFO  [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 277 ms. Found 7 JPA repository interfaces.
+2025-10-22 09:09:25.022 INFO  [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-22 09:09:25.120 INFO  [main] org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-22 09:09:25.135 INFO  [main] org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-22 09:09:25.136 INFO  [main] org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-22 09:09:25.461 INFO  [main] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-22 09:09:25.461 INFO  [main] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 7083 ms
+2025-10-22 09:09:26.552 INFO  [main] org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-22 09:09:26.841 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-22 09:09:27.017 INFO  [main] org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-22 09:09:28.715 INFO  [main] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-22 09:09:28.899 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-22 09:09:29.733 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6338afe2
+2025-10-22 09:09:29.738 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-22 09:09:30.122 INFO  [main] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-22 09:09:30.158 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(12, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@7a587e84) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@622ba721)
+2025-10-22 09:09:30.159 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(-9, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@6b2f7527) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@7509226c)
+2025-10-22 09:09:30.160 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(-3, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@4c9cce17) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@73316a0a)
+2025-10-22 09:09:30.160 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4003, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@63a7af06) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@5f01fb5c)
+2025-10-22 09:09:30.162 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4001, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@75c77add) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@d5e3f55)
+2025-10-22 09:09:30.162 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4002, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@53df7e67) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@3d4b45b)
+2025-10-22 09:09:30.163 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2004, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@4d0b276e) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@31531d0d)
+2025-10-22 09:09:30.163 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2005, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@19d76106) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@3f87780b)
+2025-10-22 09:09:30.164 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2011, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@2ba318c2) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@231d3ce)
+2025-10-22 09:09:34.149 INFO  [main] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-22 09:09:34.262 INFO  [main] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 09:09:35.318 INFO  [main] org.springframework.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-22 09:09:37.853 DEBUG [main] org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder - No authenticationProviders and no parentAuthenticationManager defined. Returning null.
+2025-10-22 09:09:38.179 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping - 34 mappings in 'requestMappingHandlerMapping'
+2025-10-22 09:09:38.375 DEBUG [main] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-10-22 09:09:38.547 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, JwtAuthFilter, BasicAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-22 09:09:38.682 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-22 09:09:38.795 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-22 09:09:39.129 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/v3/api-docs/**'], Ant [pattern='/v3/api-docs/**']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:09:39.129 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/v3/api-docs/**'], Ant [pattern='/v3/api-docs/**']]
+2025-10-22 09:09:39.130 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui.html']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:09:39.130 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui.html']]
+2025-10-22 09:09:39.130 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/swagger-ui/**'], Ant [pattern='/swagger-ui/**']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:09:39.130 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/swagger-ui/**'], Ant [pattern='/swagger-ui/**']]
+2025-10-22 09:09:39.253 INFO  [main] org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-10-22 09:09:39.309 INFO  [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-10-22 09:09:39.331 INFO  [main] com.example.stock_order.StockOrderApplication - Started StockOrderApplication in 22.349 seconds (process running for 23.129)
+2025-10-22 09:09:50.670 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-22 09:09:50.682 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-22 09:09:50.690 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 09:09:50.694 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-22 09:09:50.703 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-22 09:13:30.568 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2025-10-22 09:13:30.748 INFO  [main] com.example.stock_order.StockOrderApplication - Starting StockOrderApplication using Java 22 with PID 24236 (C:\Users\Monster PC\Desktop\Stock_Order_dilaraacetin-main\target\classes started by Monster PC in C:\Users\Monster PC\Desktop\Stock_Order_dilaraacetin-main)
+2025-10-22 09:13:30.751 INFO  [main] com.example.stock_order.StockOrderApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-22 09:13:36.511 INFO  [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-22 09:13:37.024 INFO  [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 463 ms. Found 7 JPA repository interfaces.
+2025-10-22 09:13:41.187 INFO  [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-22 09:13:41.267 INFO  [main] org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-22 09:13:41.280 INFO  [main] org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-22 09:13:41.282 INFO  [main] org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-22 09:13:41.604 INFO  [main] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-22 09:13:41.614 INFO  [main] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 10589 ms
+2025-10-22 09:13:42.089 INFO  [main] org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-22 09:13:42.162 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-22 09:13:42.203 INFO  [main] org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-22 09:13:42.628 INFO  [main] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-22 09:13:42.718 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-22 09:13:43.037 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68f79b7c
+2025-10-22 09:13:43.038 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-22 09:13:43.144 INFO  [main] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(12, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@554d040d) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@3fe24670)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(-9, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@3c46e6f6) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@7d6019d5)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(-3, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@40b01718) replaced previous registration(org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@6d4c18b8)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4003, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@663622b1) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@1be52113)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4001, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@5badeda0) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@56a9a7b5)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(4002, org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@1dd247b) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@338270ea)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2004, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@7f64bd7) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@1c79d093)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2005, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@746fd19b) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@54caeadc)
+2025-10-22 09:13:43.155 DEBUG [main] org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry - addDescriptor(2011, org.hibernate.type.descriptor.sql.internal.CapacityDependentDdlType@61d7bb61) replaced previous registration(org.hibernate.type.descriptor.sql.internal.DdlTypeImpl@33f81280)
+2025-10-22 09:13:44.500 INFO  [main] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-22 09:13:44.567 INFO  [main] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 09:13:45.013 INFO  [main] org.springframework.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-22 09:13:46.353 DEBUG [main] org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder - No authenticationProviders and no parentAuthenticationManager defined. Returning null.
+2025-10-22 09:13:46.601 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping - 34 mappings in 'requestMappingHandlerMapping'
+2025-10-22 09:13:46.753 DEBUG [main] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-10-22 09:13:46.845 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, JwtAuthFilter, BasicAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-22 09:13:46.963 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-22 09:13:47.132 DEBUG [main] org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-22 09:13:47.436 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/v3/api-docs/**'], Ant [pattern='/v3/api-docs/**']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:13:47.436 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/v3/api-docs/**'], Ant [pattern='/v3/api-docs/**']]
+2025-10-22 09:13:47.436 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui.html']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:13:47.436 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui.html']]
+2025-10-22 09:13:47.436 WARN  [main] org.springframework.security.config.annotation.web.builders.WebSecurity - You are asking Spring Security to ignore Deferred [Mvc [pattern='/swagger-ui/**'], Ant [pattern='/swagger-ui/**']]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2025-10-22 09:13:47.436 DEBUG [main] org.springframework.security.web.DefaultSecurityFilterChain - Will not secure Deferred [Mvc [pattern='/swagger-ui/**'], Ant [pattern='/swagger-ui/**']]
+2025-10-22 09:13:47.521 INFO  [main] org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-10-22 09:13:47.552 INFO  [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-10-22 09:13:47.570 INFO  [main] com.example.stock_order.StockOrderApplication - Started StockOrderApplication in 20.894 seconds (process running for 22.734)
+2025-10-22 09:17:36.762 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-22 09:17:36.771 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-22 09:17:36.777 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 09:17:36.779 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-22 09:17:36.785 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

@@ -20,9 +20,18 @@ public final class OrderMapper {
         d.setCreatedAt(e.getCreatedAt());
         d.setUpdatedAt(e.getUpdatedAt());
         d.setItems(e.getItems().stream().map(OrderMapper::toDomain).collect(Collectors.toList()));
+
+        d.setShippingName(e.getShippingName());
+        d.setShippingLine1(e.getShippingLine1());
+        d.setShippingLine2(e.getShippingLine2());
+        d.setShippingCity(e.getShippingCity());
+        d.setShippingState(e.getShippingState());
+        d.setShippingPostalCode(e.getShippingPostalCode());
+        d.setShippingCountry(e.getShippingCountry());
+        d.setShippingPhone(e.getShippingPhone());
         return d;
     }
-   
+
     public static Order toDomainNoItems(OrderEntity e){
         if(e==null) return null;
         Order d = new Order();
@@ -32,7 +41,16 @@ public final class OrderMapper {
         d.setTotalAmount(e.getTotalAmount());
         d.setCreatedAt(e.getCreatedAt());
         d.setUpdatedAt(e.getUpdatedAt());
-        d.setItems(java.util.List.of()); 
+        d.setItems(java.util.List.of());
+
+        d.setShippingName(e.getShippingName());
+        d.setShippingLine1(e.getShippingLine1());
+        d.setShippingLine2(e.getShippingLine2());
+        d.setShippingCity(e.getShippingCity());
+        d.setShippingState(e.getShippingState());
+        d.setShippingPostalCode(e.getShippingPostalCode());
+        d.setShippingCountry(e.getShippingCountry());
+        d.setShippingPhone(e.getShippingPhone());
         return d;
     }
 
@@ -56,6 +74,15 @@ public final class OrderMapper {
         e.setUserId(d.getUserId());
         e.setStatus(OrderEntity.Status.valueOf(d.getStatus().name()));
         e.setTotalAmount(d.getTotalAmount());
+
+        e.setShippingName(d.getShippingName());
+        e.setShippingLine1(d.getShippingLine1());
+        e.setShippingLine2(d.getShippingLine2());
+        e.setShippingCity(d.getShippingCity());
+        e.setShippingState(d.getShippingState());
+        e.setShippingPostalCode(d.getShippingPostalCode());
+        e.setShippingCountry(d.getShippingCountry());
+        e.setShippingPhone(d.getShippingPhone());
         return e;
     }
 }

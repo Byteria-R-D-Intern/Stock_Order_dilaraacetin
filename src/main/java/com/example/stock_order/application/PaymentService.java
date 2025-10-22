@@ -35,7 +35,7 @@ public class PaymentService {
                     "SUCCEEDED",
                     amount,
                     currency,
-                    "****",
+                    "****", //bunları düzelt, kart bilgilerini versin
                     "CARD"
             );
         }
