@@ -29,7 +29,7 @@ public class OrdersController {
     @PostMapping("/checkout/token")
         @PreAuthorize("isAuthenticated()")
         public ResponseEntity<CheckoutResponse> checkoutWithToken(@RequestBody @Valid CheckoutWithTokenRequest req){
-        var order = checkoutService.checkoutWithToken(req.paymentToken(), req.shippingAddressId()); // <-- eklendi
+        var order = checkoutService.checkoutWithToken(req.paymentToken(), req.shippingAddressId()); 
         var resp = new CheckoutResponse(
                 order.getId(), order.getStatus().name(), order.getTotalAmount(),
                 order.getItems().stream().map(i -> new CheckoutResponse.Item(
@@ -42,7 +42,7 @@ public class OrdersController {
         @PostMapping("/checkout/saved")
         @PreAuthorize("isAuthenticated()")
         public ResponseEntity<CheckoutResponse> checkoutWithSaved(@RequestBody @Valid CheckoutWithSavedMethodRequest req){
-        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId(), req.shippingAddressId()); // <-- eklendi
+        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId(), req.shippingAddressId());
         var resp = new CheckoutResponse(
                 order.getId(), order.getStatus().name(), order.getTotalAmount(),
                 order.getItems().stream().map(i -> new CheckoutResponse.Item(

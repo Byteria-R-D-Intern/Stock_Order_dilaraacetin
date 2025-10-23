@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.user.UpdateUserRoleRequest;
 import com.example.stock_order.application.AuditLogService;
-import com.example.stock_order.domain.ports.repository.OrderRepository;
-import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 import com.example.stock_order.domain.ports.repository.UserRepository;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,8 +29,6 @@ public class AdminController {
 
     private final UserRepository users;
     private final AuditLogService audit;
-    private final OrderRepository orders;
-    private final ProductStockRepository stocks;
 
     @PutMapping("/users/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")

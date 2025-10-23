@@ -1,3 +1,4 @@
+// src/main/java/com/example/stock_order/adapters/web/AdminOrdersController.java
 package com.example.stock_order.adapters.web;
 
 import java.util.List;
@@ -41,10 +42,10 @@ public class AdminOrdersController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AdminOrderDetailResponse> get(@PathVariable Long id) {
+    public AdminOrderDetailResponse get(@PathVariable Long id) {
         var order = orders.findByIdWithItems(id)
                 .orElseThrow(() -> new NotFoundException("order not found"));
-        return ResponseEntity.ok(toDetail(order));
+        return toDetail(order);
     }
 
     private AdminOrderSummaryResponse toSummary(Order o) {
@@ -80,11 +81,11 @@ public class AdminOrdersController {
                 items
         );
     }
+
     @PostMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam Order.Status status) {
-        orderAdminService.changeStatus(id, status); 
-        
+        orderAdminService.changeStatus(id, status);
         return ResponseEntity.ok().build();
     }
 }

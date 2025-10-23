@@ -29,7 +29,7 @@
     <appender-ref ref="CONSOLE"/>
   </root>
 
-  <logger name="SECURE" level="INFO" additivity="false">
+  <logger name="SECURE" level="DEBUG" additivity="false">
     <appender-ref ref="SECURE_FILE"/>
   </logger>
 

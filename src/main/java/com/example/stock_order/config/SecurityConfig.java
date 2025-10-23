@@ -22,23 +22,29 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/", "/index.html", "/login.html",
+                "/css/**", "/js/**", "/images/**"
+            ).permitAll()
+
             .requestMatchers("/api/auth/**", "/error").permitAll()
             .requestMatchers(
                 "/v3/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**"
             ).permitAll()
+
             .anyRequest().authenticated()
         )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .httpBasic(Customizer.withDefaults());
-        return http.build();
-    }
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .httpBasic(Customizer.withDefaults());
+    return http.build();
+}
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }

@@ -25,6 +25,13 @@ public class OrderAdminService {
                 .orElseThrow(() -> new java.util.NoSuchElementException("order not found"));
 
         var prev = order.getStatus();
+        if (prev == status) {
+            return;
+        }
+
+        if (prev == Order.Status.CANCELLED && status != Order.Status.CANCELLED) {
+            throw new IllegalArgumentException("order_already_cancelled");
+        }
 
         if (prev != Order.Status.CANCELLED && status == Order.Status.CANCELLED) {
             for (var it : order.getItems()) {

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Products</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/products.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Stock Order</div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <span id="userEmail" class="user"></span>
+      <a class="btn secondary" href="/cart.html" id="cartBtn">Cart <span id="cartCount" class="badge">0</span></a>
+      <button id="logoutBtn" class="btn danger">Logout</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <h1 class="page-title">Products</h1>
+    <div id="msg" class="msg"></div>
+
+    <div class="grid" id="productsGrid">
+    </div>
+  </main>
+
+  <script src="/js/products.js"></script>
+</body>
+</html>

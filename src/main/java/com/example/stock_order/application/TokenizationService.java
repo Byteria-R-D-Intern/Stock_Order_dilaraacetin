@@ -13,7 +13,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -33,21 +34,24 @@ public class TokenizationService {
             Instant expiresAt
     ) {}
 
+    private static final Logger SECURE_LOG = LoggerFactory.getLogger("SECURE");
+
     private final Map<String, EncryptedCard> store = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
     private final Duration ttl;
     private final SecretKey secretKey;
 
-    @Autowired
     public TokenizationService(
             @Value("${payment.token.ttl-seconds:600}") long ttlSeconds,
             @Value("${payment.token.secret:}") String base64Key
     ) {
         this.ttl = Duration.ofSeconds(ttlSeconds <= 0 ? 600 : ttlSeconds);
         byte[] keyBytes = decodeAesKey(base64Key);
-        if (keyBytes == null) { 
-            keyBytes = new byte[32]; 
+        if (keyBytes == null) {
+            keyBytes = new byte[32];
             random.nextBytes(keyBytes);
+            SECURE_LOG.info("Tokenization: using RANDOM key (no external secret)"); 
+            SECURE_LOG.info("Tokenization: using EXTERNAL secret (base64)");
         }
         this.secretKey = new SecretKeySpec(keyBytes, "AES");
     }
@@ -61,6 +65,8 @@ public class TokenizationService {
         String token = generateToken();
         EncryptedCard enc = encrypt(pan);
         store.put(token, enc);
+
+        SECURE_LOG.debug("Token stored: {} expires {}", token, enc.expiresAt());
 
         return new TokenRecord(token, enc.last4(), enc.brand(), enc.expiresAt().toEpochMilli());
     }
@@ -86,16 +92,25 @@ public class TokenizationService {
         return new DetokenizeResult(pan, enc.last4(), enc.brand());
     }
 
-    public void revoke(String token) { store.remove(token); }
+    public void revoke(String token) {
+        if (store.remove(token) != null) {
+            SECURE_LOG.debug("Token revoked: {}", token);
+        }
+    }
 
     @Scheduled(fixedDelay = 60_000)
     public void evictExpired() {
         Instant now = Instant.now();
-        store.entrySet().removeIf(e -> e.getValue().expiresAt().isBefore(now));
+        store.entrySet().removeIf(e -> {
+            boolean expired = e.getValue().expiresAt().isBefore(now);
+            if (expired) {
+                SECURE_LOG.debug("Token expired and removed: {}", e.getKey());
+            }
+            return expired;
+        });
     }
 
     public record DetokenizeResult(String pan, String last4, String brand) {}
-
 
     private byte[] decodeAesKey(String base64Key) {
         if (base64Key == null || base64Key.isBlank()) return null;

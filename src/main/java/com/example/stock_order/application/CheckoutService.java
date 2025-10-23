@@ -69,11 +69,9 @@ public class CheckoutService {
     private Order doCheckout(String paymentToken, Long savedPaymentMethodId, Long shippingAddressId) {
         Long userId = currentUserIdOrThrow();
 
-        // 1) Adresin kullanıcıya ait olduğunu doğrula
         var addr = addresses.findByIdAndUserId(shippingAddressId, userId)
                 .orElseThrow(() -> new NotFoundException("address not found"));
 
-        // 2) Sepeti ve tutarı hazırla (aynı)
         Cart cart = carts.findByUserId(userId).orElseThrow(() -> new NotFoundException("sepet boş"));
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             throw new NotFoundException("sepet boş");
@@ -100,16 +98,17 @@ public class CheckoutService {
             snapshotItems.add(oi);
         }
 
-        // 3) Ödeme
         if (savedPaymentMethodId != null) {
-            var spm = savedPaymentMethodRepo.findByIdAndUserIdAndActiveTrue(savedPaymentMethodId, userId)
-                    .orElseThrow(() -> new NotFoundException("payment method not found"));
-            payment.charge(spm.getToken(), total, "TRY", true);
+            var spm = savedPaymentMethodRepo
+                .findByIdAndUserIdAndActiveTrue(savedPaymentMethodId, userId)
+                .orElseThrow(() -> new NotFoundException("payment method not found"));
+
+            payment.chargeSaved(spm.getToken(), total, "TRY", spm.getLast4(), spm.getBrand());
+
         } else {
-            payment.charge(paymentToken, total, "TRY", false);
+            payment.chargeOneTime(paymentToken, total, "TRY");
         }
 
-        // 4) Stok düş + Sipariş oluştur + Sepeti temizle (adres bilgilerini kopyala)
         int attempt = 0;
         while (true) {
             try {
@@ -130,7 +129,6 @@ public class CheckoutService {
                 order.setUpdatedAt(Instant.now());
                 order.setItems(snapshotItems);
 
-                // KARGO/ADRES alanları:
                 order.setShippingName(addr.getRecipientName());
                 order.setShippingLine1(addr.getLine1());
                 order.setShippingLine2(addr.getLine2());

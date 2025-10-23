@@ -13,32 +13,35 @@ public class PaymentService {
 
     private final TokenizationService tokenization;
 
-    public ChargeResult charge(String token, BigDecimal amount, String currency, boolean reusable) {
+     public ChargeResult chargeOneTime(String token, BigDecimal amount, String currency) {
         if (amount == null || amount.signum() <= 0) {
             throw new IllegalArgumentException("invalid_amount");
         }
+        var dt = tokenization.detokenize(token); 
+        tokenization.revoke(token);              
+        return new ChargeResult(
+                UUID.randomUUID().toString(),
+                "SUCCEEDED",
+                amount,
+                currency,
+                dt.last4(),
+                dt.brand()
+        );
+    }
 
-        if (!reusable) {
-            var dt = tokenization.detokenize(token);
-            tokenization.revoke(token);
-            return new ChargeResult(
-                    UUID.randomUUID().toString(),
-                    "SUCCEEDED",
-                    amount,
-                    currency,
-                    dt.last4(),
-                    dt.brand()
-            );
-        } else {
-            return new ChargeResult(
-                    UUID.randomUUID().toString(),
-                    "SUCCEEDED",
-                    amount,
-                    currency,
-                    "****", //bunları düzelt, kart bilgilerini versin
-                    "CARD"
-            );
+    public ChargeResult chargeSaved(String token, BigDecimal amount, String currency,
+                                    String last4, String brand) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("invalid_amount");
         }
+        return new ChargeResult(
+                UUID.randomUUID().toString(),
+                "SUCCEEDED",
+                amount,
+                currency,
+                last4,
+                brand
+        );
     }
 
     public record ChargeResult(
