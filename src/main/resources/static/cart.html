@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/products.css" />
+  <link rel="stylesheet" href="/css/cart.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Stock Order</div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <a class="btn secondary" href="/products.html">Continue Shopping</a>
+    <span id="userEmail" class="user"></span>
+    <button id="logoutBtn" class="btn danger">Logout</button>
+  </div>
+</header>
+
+<main class="content">
+  <h1 class="page-title">Your Cart</h1>
+  <div id="msg" class="msg"></div>
+
+  <div id="cartContainer" class="cart">
+  </div>
+
+  <div class="summary">
+    <div class="total-row">
+      <span>Subtotal</span>
+      <strong id="subtotal">₺0,00</strong>
+    </div>
+    <div class="summary-actions">
+      <button id="clearBtn" class="btn danger outline">Clear Cart</button>
+      <button id="checkoutBtn" class="btn accent">Checkout</button>
+    </div>
+  </div>
+</main>
+
+<script src="/js/cart.js"></script>
+</body>
+</html>
