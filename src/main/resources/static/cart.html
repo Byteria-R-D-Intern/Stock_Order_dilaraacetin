@@ -1,42 +1,40 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Cart</title>
+  <title>Your Cart • Stock Order</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="/css/products.css" />
-  <link rel="stylesheet" href="/css/cart.css" />
+  <link href="/css/base.css" rel="stylesheet" />
+  <link href="/css/cart.css" rel="stylesheet" />
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">Stock Order</div>
-  <div class="spacer"></div>
-  <div class="actions">
-    <a class="btn secondary" href="/products.html">Continue Shopping</a>
-    <span id="userEmail" class="user"></span>
-    <button id="logoutBtn" class="btn danger">Logout</button>
-  </div>
-</header>
+  <header class="topbar">
+    <div class="brand"><a href="/products.html">Stock Order</a></div>
+    <nav class="actions">
+      <a class="btn ghost" href="/products.html">Continue Shopping</a>
+      <button id="logoutBtn" class="btn danger">Logout</button>
+    </nav>
+  </header>
 
-<main class="content">
-  <h1 class="page-title">Your Cart</h1>
-  <div id="msg" class="msg"></div>
+  <main class="page">
+    <h1>Your Cart</h1>
+    <div id="flash" class="flash" hidden></div>
 
-  <div id="cartContainer" class="cart">
-  </div>
+    <section id="cartItems" class="stack"></section>
 
-  <div class="summary">
-    <div class="total-row">
-      <span>Subtotal</span>
-      <strong id="subtotal">₺0,00</strong>
-    </div>
-    <div class="summary-actions">
-      <button id="clearBtn" class="btn danger outline">Clear Cart</button>
-      <button id="checkoutBtn" class="btn accent">Checkout</button>
-    </div>
-  </div>
-</main>
+    <section class="card summary">
+      <div class="sum-row">
+        <span>Subtotal</span>
+        <strong id="subtotal">₺0,00</strong>
+      </div>
+      <div class="row gap">
+        <button id="clearCart" class="btn ghost">Clear Cart</button>
+        <button id="goCheckout" class="btn primary">Proceed to Payment</button>
+      </div>
+    </section>
+  </main>
 
-<script src="/js/cart.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/cart.js"></script>
 </body>
 </html>

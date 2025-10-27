@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile • Stock Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/css/base.css" rel="stylesheet" />
+  <link href="/css/profile.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="/products.html" style="color:inherit;text-decoration:none;">Stock Order</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <a class="btn ghost" href="/products.html">Products</a>
+      <a class="btn ghost" href="/cart.html">Cart</a>
+      <button id="logoutBtn" class="btn danger">Logout</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Profile</h1>
+    <div id="flash" class="flash" hidden></div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="card-header">
+          <h2>Addresses</h2>
+          <button class="link" id="toggleAddrForm">+ Add address</button>
+        </div>
+        <div id="addrList" class="list"></div>
+
+        <form id="addrForm" class="form" hidden>
+          <div class="row">
+            <label>Title* <input name="title" required maxlength="64"></label>
+            <label>Recipient Name* <input name="recipientName" required maxlength="128"></label>
+          </div>
+          <label>Line 1* <input name="line1" required maxlength="255"></label>
+          <label>Line 2 <input name="line2" maxlength="255" placeholder="Optional"></label>
+          <div class="row">
+            <label>City* <input name="city" required maxlength="128"></label>
+            <label>State <input name="state" maxlength="128" placeholder="Optional"></label>
+          </div>
+          <div class="row">
+            <label>Postal Code <input name="postalCode" maxlength="32" placeholder="Optional"></label>
+            <label>Country* <input name="country" required maxlength="64"></label>
+          </div>
+          <label>Phone*
+            <input name="phone" required maxlength="32"
+                   pattern="^[0-9+\\-()\\s]{7,32}$"
+                   title="Only digits and + - ( ) space" />
+          </label>
+          <label class="check"><input type="checkbox" name="isDefault"> Make default</label>
+          <div class="form-actions">
+            <button class="btn" type="submit">Save Address</button>
+            <button class="btn ghost" type="button" id="cancelAddrForm">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Saved Cards</h2>
+        </div>
+        <div id="pmList" class="list"></div>
+        <p class="muted small">
+          You can delete a saved card below. New cards can be used during checkout.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/profile.js"></script>
+</body>
+</html>

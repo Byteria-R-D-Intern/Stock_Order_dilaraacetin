@@ -34,6 +34,8 @@ public class SecurityConfig {
                     "/login.html",
                     "/cart.html", 
                     "/products.html",
+                    "/checkout.html",
+                    "/profile.html",
                     "/css/**",
                     "/js/**",
                     "/swagger-ui.html",

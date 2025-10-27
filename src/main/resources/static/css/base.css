@@ -1,0 +1,20 @@
+:root{
+  --bg:#3b4465; --panel:#ffffff; --muted:#a1b4b4; --text:#3b4465;
+  --accent:#a7e245; --danger:#d9534f; --chip:#eef9fe; --chip-border:#cddbef;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Roboto, -apple-system, 'Helvetica Neue','Segoe UI', Arial, sans-serif;background:var(--bg);color:#fff;}
+.topbar{display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,.15);backdrop-filter:blur(4px);position:sticky;top:0}
+.brand{font-weight:700;letter-spacing:.5px}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn.ghost{background:#fff;color:var(--text);border:1px solid rgba(0,0,0,.08)}
+.btn.primary{background:var(--accent);color:#152}
+.btn.danger{background:var(--danger);color:#fff}
+.content,.page{max-width:1100px;margin:24px auto;padding:0 16px}
+.card{background:#fff;color:#3b4465;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.25);padding:16px}
+.muted{color:#8aa}
+.small{font-size:12px}
+.flash{margin:10px 0;padding:10px 12px;border-radius:8px}
+.flash.error{background:#ffe8e8;color:#a30000;border:1px solid #f2bbbb}
+.flash.ok{background:#e8ffe8;color:#045e16;border:1px solid #b5f0b5}
