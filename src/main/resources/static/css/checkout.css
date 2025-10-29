@@ -24,5 +24,4 @@
 
 @media (max-width: 1024px){ .grid{ grid-template-columns:1fr; } }
 
-/* ÖNEMLİ: hidden özniteliğini zorla görünmez yap */
 [hidden] { display: none !important; }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <style>
+    .tabs { display:flex; gap:10px; margin-bottom:16px; }
+    .tab { padding:8px 14px; border:none; border-radius:8px; background:#fff; color:#3b4465; cursor:pointer; font-weight:600; }
+    .tab.active { background:#a7e245; color:#1d1d1d; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .card { margin-bottom:10px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Stock Order • Admin</div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <a class="btn ghost" href="/products.html">Products</a>
+      <button id="logoutBtn" class="btn danger">Logout</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Admin Dashboard</h1>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="products">Products</button>
+      <button class="tab" data-tab="orders">Orders</button>
+      <button class="tab" data-tab="users">Users</button>
+    </div>
+
+    <section id="tab-products" class="tab-content active"></section>
+    <section id="tab-orders" class="tab-content"></section>
+    <section id="tab-users" class="tab-content"></section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

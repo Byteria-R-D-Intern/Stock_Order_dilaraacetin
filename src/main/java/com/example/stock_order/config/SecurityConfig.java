@@ -2,6 +2,7 @@ package com.example.stock_order.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -28,22 +29,35 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/auth/**",
-                    "/api/catalog/**",        
-                    "/login.html",
-                    "/cart.html", 
-                    "/products.html",
-                    "/checkout.html",
-                    "/profile.html",
-                    "/css/**",
-                    "/js/**",
-                    "/swagger-ui.html",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**"
+
+                .requestMatchers(HttpMethod.GET,
+                        "/",
+                        "/index.html",
+                        "/login.html",
+                        "/products.html",
+                        "/cart.html",
+                        "/checkout.html",
+                        "/profile.html",
+                        "/admin.html",           
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/favicon.ico"
                 ).permitAll()
+
+                .requestMatchers(
+                        "/api/auth/**",         
+                        "/api/catalog/**",       
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                ).permitAll()
+
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
                 .anyRequest().authenticated()
             )
+
             .httpBasic(AbstractHttpConfigurer::disable)
             .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, e) -> {
                 res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -58,7 +72,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {

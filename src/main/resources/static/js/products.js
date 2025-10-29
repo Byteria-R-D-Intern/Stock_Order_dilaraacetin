@@ -1,8 +1,5 @@
-const storageKey = "auth"; 
-const state = {
-  auth: null,
-  products: [],
-};
+const storageKey = "auth";
+const state = { auth: null, products: [] };
 
 function getAuth() {
   try { return JSON.parse(localStorage.getItem(storageKey) || "null"); }
@@ -119,13 +116,15 @@ async function loadProducts() {
 }
 
 function wireHeader() {
-  const email = state.auth?.email || ""; 
+  const email = state.auth?.email || "";
   if (email) document.getElementById("userEmail").textContent = email;
 
   document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.removeItem(storageKey);
     window.location.replace("/login.html");
   });
+
+  window.__auth?.ensureAdminButton?.();
 }
 
 (function init(){
