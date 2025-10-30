@@ -1,5 +1,6 @@
 package com.example.stock_order.infrastructure.persistence.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -32,5 +33,11 @@ public class UserRepositoryJpaAdapter implements UserRepository {
         var entity = UserMapper.toEntity(user);
         var saved = jpa.saveAndFlush(entity); 
         return UserMapper.toDomain(saved);
+    }
+    @Override
+    public List<User> findAll() {
+        return jpa.findAll().stream()
+                .map(UserMapper::toDomain)
+                .toList();
     }
 }

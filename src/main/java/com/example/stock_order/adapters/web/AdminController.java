@@ -1,11 +1,13 @@
 package com.example.stock_order.adapters.web;
 
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,4 +71,21 @@ public class AdminController {
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Map<String, Object>>> listUsers() {
+        var list = users.findAll().stream()
+            .map(u -> Map.<String, Object>of(
+                "id", u.getId(),
+                "email", u.getEmail(),
+                "role", u.getRole().name(),
+                "active", u.isActive(),
+                "createdAt", u.getCreatedAt(),
+                "updatedAt", u.getUpdatedAt()
+            ))
+            .toList();
+        return ResponseEntity.ok(list);
+    }
+
+
 }
