@@ -28,7 +28,9 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET,
                         "/",
@@ -38,7 +40,9 @@ public class SecurityConfig {
                         "/cart.html",
                         "/checkout.html",
                         "/profile.html",
-                        "/admin.html",           
+                        "/admin.html",        
+                        "/my-orders.html",    
+                        "/orders.html",       
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -46,8 +50,8 @@ public class SecurityConfig {
                 ).permitAll()
 
                 .requestMatchers(
-                        "/api/auth/**",         
-                        "/api/catalog/**",       
+                        "/api/auth/**",       
+                        "/api/catalog/**",    
                         "/swagger-ui.html",
                         "/swagger-ui/**",
                         "/v3/api-docs/**"

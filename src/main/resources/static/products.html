@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/css/products.css" />
   <link rel="stylesheet" href="/css/base.css" />
-
 </head>
 <body>
   <header class="topbar">
@@ -15,8 +14,8 @@
     <div class="actions">
       <span id="userEmail" class="user"></span>
       <a id="adminBtn" class="btn ghost hidden" href="/admin.html">Admin</a>
+      <a class="btn ghost" href="/profile.html" id="profileBtn">Profile</a>
       <a class="btn secondary" href="/cart.html" id="cartBtn">Cart <span id="cartCount" class="badge">0</span></a>
-      <a class="btn secondary" href="/profile.html" id="profileBtn">Profile</a>
       <button id="logoutBtn" class="btn danger">Logout</button>
     </div>
   </header>
@@ -25,9 +24,21 @@
     <h1 class="page-title">Products</h1>
     <div id="msg" class="msg"></div>
 
+    <div class="toolbar">
+      <input id="prodFilterId" type="number" min="1" class="search-input" placeholder="Filter by Product ID" />
+      <button id="applyProdFilter" class="btn ghost">Apply</button>
+      <button id="clearProdFilter" class="btn ghost">Clear</button>
+      <div class="spacer"></div>
+      <span id="prodCount" class="badge"></span>
+    </div>
+
     <div class="grid" id="productsGrid"></div>
 
-    <div id="pagerBar" style="display:flex;justify-content:center;margin:20px 0;"></div>
+    <div id="productsPager" class="row" style="justify-content:center; gap:10px; margin:12px 0;" hidden>
+      <button class="btn secondary" id="prodPrev">Prev</button>
+      <span class="badge" id="prodPageInfo"></span>
+      <button class="btn secondary" id="prodNext">Next</button>
+    </div>
   </main>
 
   <script src="/js/common.js"></script>
