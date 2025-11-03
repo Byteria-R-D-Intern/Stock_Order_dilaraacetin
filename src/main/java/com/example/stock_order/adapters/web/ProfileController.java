@@ -21,6 +21,7 @@ import com.example.stock_order.adapters.web.dto.profile.AddressUpdateRequest;
 import com.example.stock_order.adapters.web.dto.profile.UpdateProfileRequest;
 import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.application.AuditLogService;
+import com.example.stock_order.application.NotificationService;
 import com.example.stock_order.domain.model.User;
 import com.example.stock_order.domain.model.UserAddress;
 import com.example.stock_order.domain.ports.repository.UserAddressRepository;
@@ -39,6 +40,7 @@ public class ProfileController {
     private final UserRepository users;
     private final UserAddressRepository addresses;
     private final AuditLogService audit;
+    private final NotificationService notifications;
 
     private Long currentUserId(Authentication auth){
         String email = auth.getName();
@@ -53,6 +55,9 @@ public class ProfileController {
         if (req.phoneNumber() != null) u.setPhoneNumber(req.phoneNumber());
         users.save(u);
         audit.log("PROFILE_UPDATED", "USER", uid, java.util.Map.of("phone", u.getPhoneNumber()));
+
+        notifications.notifyAccount(uid, "Profile updated", "Your profile information was updated.");
+
         return ResponseEntity.ok().build();
     }
 
@@ -86,6 +91,9 @@ public class ProfileController {
 
         var saved = addresses.save(a);
         audit.log("ADDRESS_CREATED", "USER_ADDRESS", saved.getId(), java.util.Map.of("userId", uid, "title", saved.getTitle()));
+
+        notifications.notifyAccount(uid, "Address added", "Address \"" + saved.getTitle() + "\" has been added.");
+
         return ResponseEntity.ok(AddressResponse.of(saved));
     }
 
@@ -115,15 +123,21 @@ public class ProfileController {
 
         var saved = addresses.save(a);
         audit.log("ADDRESS_UPDATED", "USER_ADDRESS", saved.getId(), java.util.Map.of("userId", uid, "title", saved.getTitle()));
+
+        notifications.notifyAccount(uid, "Address updated", "Address \"" + saved.getTitle() + "\" has been updated.");
+
         return ResponseEntity.ok(AddressResponse.of(saved));
     }
 
     @DeleteMapping("/addresses/{id}")
     public ResponseEntity<Void> deleteAddress(Authentication auth, @PathVariable Long id){
         var uid = currentUserId(auth);
-        addresses.findByIdAndUserId(id, uid).orElseThrow(() -> new NotFoundException("address not found"));
+        var a = addresses.findByIdAndUserId(id, uid).orElseThrow(() -> new NotFoundException("address not found"));
         addresses.deleteByIdAndUserId(id, uid);
         audit.log("ADDRESS_DELETED", "USER_ADDRESS", id, java.util.Map.of("userId", uid));
+
+        notifications.notifyAccount(uid, "Address deleted", "Address \"" + a.getTitle() + "\" has been deleted.");
+
         return ResponseEntity.ok().build();
     }
 
@@ -135,6 +149,9 @@ public class ProfileController {
         a.setDefault(true);
         addresses.save(a);
         audit.log("ADDRESS_SET_DEFAULT", "USER_ADDRESS", id, java.util.Map.of("userId", uid));
+
+        notifications.notifyAccount(uid, "Default address set", "Default address changed to \"" + a.getTitle() + "\".");
+
         return ResponseEntity.ok().build();
     }
 }

@@ -33,21 +33,21 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET,
-                        "/",
-                        "/index.html",
-                        "/login.html",
-                        "/products.html",
-                        "/cart.html",
-                        "/checkout.html",
-                        "/profile.html",
-                        "/admin.html",        
-                        "/my-orders.html",    
-                        "/orders.html",       
-                        "/css/**",
-                        "/js/**",
-                        "/images/**",
-                        "/favicon.ico"
+                    "/",
+                    "/index.html",
+                    "/login.html",
+                    "/products.html",
+                    "/cart.html",
+                    "/checkout.html",
+                    "/profile.html",
+                    "/notifications.html", // <- BUNU EKLE
+                    "/admin.html",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/favicon.ico"
                 ).permitAll()
+
 
                 .requestMatchers(
                         "/api/auth/**",       

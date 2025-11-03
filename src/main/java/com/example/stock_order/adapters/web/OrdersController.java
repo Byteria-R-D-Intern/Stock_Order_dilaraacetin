@@ -1,3 +1,4 @@
+// src/main/java/com/example/stock_order/adapters/web/OrdersController.java
 package com.example.stock_order.adapters.web;
 
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import com.example.stock_order.adapters.web.dto.order.CheckoutResponse;
 import com.example.stock_order.adapters.web.dto.order.CheckoutWithSavedMethodRequest;
 import com.example.stock_order.adapters.web.dto.order.CheckoutWithTokenRequest;
 import com.example.stock_order.application.CheckoutService;
+import com.example.stock_order.application.NotificationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,32 +27,53 @@ import lombok.RequiredArgsConstructor;
 public class OrdersController {
 
     private final CheckoutService checkoutService;
+    private final NotificationService notifications;
 
     @PostMapping("/checkout/token")
-        @PreAuthorize("isAuthenticated()")
-        public ResponseEntity<CheckoutResponse> checkoutWithToken(@RequestBody @Valid CheckoutWithTokenRequest req){
-        var order = checkoutService.checkoutWithToken(req.paymentToken(), req.shippingAddressId()); 
-        var resp = new CheckoutResponse(
-                order.getId(), order.getStatus().name(), order.getTotalAmount(),
-                order.getItems().stream().map(i -> new CheckoutResponse.Item(
-                i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
-                )).collect(java.util.stream.Collectors.toList())
-        );
-        return ResponseEntity.ok(resp);
-}
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CheckoutResponse> checkoutWithToken(@RequestBody @Valid CheckoutWithTokenRequest req){
+        var order = checkoutService.checkoutWithToken(req.paymentToken(), req.shippingAddressId());
 
-        @PostMapping("/checkout/saved")
-        @PreAuthorize("isAuthenticated()")
-        public ResponseEntity<CheckoutResponse> checkoutWithSaved(@RequestBody @Valid CheckoutWithSavedMethodRequest req){
-        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId(), req.shippingAddressId());
+        try {
+            if (order.getUserId() != null) {
+                notifications.notifyPayment(order.getUserId(),
+                        "Your payment for order #" + order.getId() + " was successful.",
+                        true);
+                notifications.notifyOrderStatus(order.getUserId(), order.getId(), order.getStatus().name());
+            }
+        } catch (Exception ignore) {  }
+
         var resp = new CheckoutResponse(
                 order.getId(), order.getStatus().name(), order.getTotalAmount(),
                 order.getItems().stream().map(i -> new CheckoutResponse.Item(
-                i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
+                        i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
                 )).collect(java.util.stream.Collectors.toList())
         );
         return ResponseEntity.ok(resp);
-        }
+    }
+
+    @PostMapping("/checkout/saved")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CheckoutResponse> checkoutWithSaved(@RequestBody @Valid CheckoutWithSavedMethodRequest req){
+        var order = checkoutService.checkoutWithSaved(req.savedPaymentMethodId(), req.shippingAddressId());
+
+        try {
+            if (order.getUserId() != null) {
+                notifications.notifyPayment(order.getUserId(),
+                        "Your payment for order #" + order.getId() + " was successful.",
+                        true);
+                notifications.notifyOrderStatus(order.getUserId(), order.getId(), order.getStatus().name());
+            }
+        } catch (Exception ignore) { }
+
+        var resp = new CheckoutResponse(
+                order.getId(), order.getStatus().name(), order.getTotalAmount(),
+                order.getItems().stream().map(i -> new CheckoutResponse.Item(
+                        i.getProductId(), i.getSku(), i.getName(), i.getUnitPrice(), i.getQuantity(), i.getLineTotal()
+                )).collect(java.util.stream.Collectors.toList())
+        );
+        return ResponseEntity.ok(resp);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutResponse> get(@PathVariable Long id){

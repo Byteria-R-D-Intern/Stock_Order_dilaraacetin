@@ -18,6 +18,7 @@ public class OrderAdminService {
     private final OrderRepository orders;
     private final ProductStockRepository stocks;
     private final AuditLogService audit;
+    private final NotificationService notifications;
 
     @Transactional
     public void changeStatus(Long id, Order.Status status) {
@@ -26,6 +27,8 @@ public class OrderAdminService {
 
         var prev = order.getStatus();
         if (prev == status) {
+            audit.log("ORDER_STATUS_NOOP", "ORDER", order.getId(),
+                    Map.of("previous", prev != null ? prev.name() : null, "current", status.name()));
             return;
         }
 
@@ -46,6 +49,12 @@ public class OrderAdminService {
         orders.save(order);
 
         audit.log("ORDER_STATUS_CHANGED", "ORDER", order.getId(),
-                Map.of("previous", prev.name(), "current", status.name()));
+                Map.of("previous", prev != null ? prev.name() : null, "current", status.name()));
+
+        try {
+            if (order.getUserId() != null) {
+                notifications.notifyOrderStatus(order.getUserId(), order.getId(), status.name());
+            }
+        } catch (Exception ignore) {  }
     }
 }

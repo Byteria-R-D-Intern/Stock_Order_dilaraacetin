@@ -18,6 +18,7 @@ import com.example.stock_order.adapters.web.dto.payment.SavedPaymentMethodRespon
 import com.example.stock_order.adapters.web.dto.payment.TokenizeCardRequest;
 import com.example.stock_order.adapters.web.dto.payment.TokenizeCardResponse;
 import com.example.stock_order.application.AuditLogService;
+import com.example.stock_order.application.NotificationService;
 import com.example.stock_order.application.TokenizationService;
 import com.example.stock_order.domain.ports.repository.UserRepository;
 import com.example.stock_order.infrastructure.persistence.entity.SavedPaymentMethodEntity;
@@ -34,6 +35,7 @@ public class PaymentController {
 
     private final TokenizationService tokenization;
     private final AuditLogService audit;
+    private final NotificationService notifications;
     private final UserRepository users;
     private final SavedPaymentMethodJpaRepository savedRepo;
 
@@ -51,9 +53,10 @@ public class PaymentController {
         var rec = tokenization.tokenize(req.cardNumber(), req.expiryMonth(), req.expiryYear(), req.cvv());
         audit.log("TOKENIZE_CARD", "PAYMENT_TOKEN", null, null);
 
+        Long uid = currentUserId(auth);
         if (req.save()) {
             var spm = new SavedPaymentMethodEntity();
-            spm.setUserId(currentUserId(auth));
+            spm.setUserId(uid);
             spm.setToken(rec.token());
             spm.setLast4(rec.last4());
             spm.setBrand(rec.brand());
@@ -61,6 +64,11 @@ public class PaymentController {
             spm.setExpiryYear(req.expiryYear());
             spm.setActive(true);
             savedRepo.save(spm);
+
+            try {
+                notifications.notifyAccount(uid, "Card saved",
+                        "A payment card •••• " + rec.last4() + " has been saved to your profile.");
+            } catch (Exception ignore) { }
         }
 
         var body = new TokenizeCardResponse(rec.token(), rec.last4(), rec.brand(), rec.expiresAtEpochMs());
@@ -90,9 +98,15 @@ public class PaymentController {
         var opt = savedRepo.findByIdAndUserIdAndActiveTrue(id, uid);
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
         var e = opt.get();
-        e.setActive(false); 
+        e.setActive(false);
         savedRepo.save(e);
         audit.log("PAYMENT_METHOD_DEACTIVATED", "PAYMENT_METHOD", e.getId(), java.util.Map.of("userId", uid));
+
+        try {
+            notifications.notifyAccount(uid, "Card removed",
+                    "Your saved card •••• " + e.getLast4() + " was removed.");
+        } catch (Exception ignore) { }
+
         return ResponseEntity.noContent().build();
     }
 }

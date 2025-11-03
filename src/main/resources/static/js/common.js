@@ -26,6 +26,7 @@
     window.location.replace("/login.html");
   }
 
+  // ---- JWT helpers ----
   function b64urlToStr(b64url){
     try{
       const pad = '='.repeat((4 - (b64url.length % 4)) % 4);
@@ -62,11 +63,40 @@
   function ensureAdminButton(){
     const el = document.getElementById("adminBtn");
     if (!el) return;
-    if (isAdmin()) {
-      el.classList.remove("hidden");
-    } else {
-      el.classList.add("hidden");
+    if (isAdmin()) el.classList.remove("hidden");
+    else el.classList.add("hidden");
+  }
+
+  // ---- Notifications badge helpers ----
+  let __notifTimer = null;
+
+  async function refreshUnreadBadge() {
+    const badge = document.getElementById("notifBadge");
+    if (!badge) return;
+    try {
+      const res = await fetch("/api/notifications/unread-count", { headers: authHeader() });
+      if (!res.ok) throw 0;
+      const data = await res.json();
+      const n = Number(data?.unread || 0);
+      if (n > 0) {
+        badge.textContent = n > 99 ? "99+" : String(n);
+        badge.style.display = "inline-block";
+      } else {
+        badge.textContent = "0";
+        badge.style.display = "none";
+      }
+    } catch {
+      // sessizce yoksay
     }
+  }
+
+  function wireNotificationsBadge() {
+    refreshUnreadBadge();
+    clearInterval(__notifTimer);
+    __notifTimer = setInterval(refreshUnreadBadge, 30000);
+    window.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshUnreadBadge();
+    });
   }
 
   // global
@@ -78,6 +108,9 @@
     parseJwt,
     rolesFromToken,
     isAdmin,
-    ensureAdminButton
+    ensureAdminButton,
+    // notifications
+    refreshUnreadBadge,
+    wireNotificationsBadge
   };
 })();
