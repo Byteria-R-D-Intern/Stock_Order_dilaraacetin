@@ -22,3 +22,26 @@ body{margin:0;font-family:Roboto, -apple-system, 'Helvetica Neue','Segoe UI', Ar
 .flash.ok{background:#e8ffe8;color:#045e16;border:1px solid #b5f0b5}
 
 .hidden{display:none !important;}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  background: #2d325a;
+  color: #fff;
+  padding: 10px 24px;
+  border-bottom: 2px solid #222b4f;
+}
+
+header.topbar .brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+header.topbar .actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end; 
+}

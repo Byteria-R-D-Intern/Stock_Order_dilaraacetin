@@ -37,6 +37,7 @@
     <div class="spacer"></div>
     <div class="actions">
       <a class="btn ghost" href="/products.html">Products</a>
+      <a class="btn ghost" href="/notifications.html">Notifications</a>
       <button id="logoutBtn" class="btn danger">Logout</button>
     </div>
   </header>
@@ -50,7 +51,6 @@
       <button class="tab" data-tab="users">Users</button>
     </div>
 
-    <!-- PRODUCTS -->
     <section id="tab-products" class="tab-content active">
       <div class="toolbar">
         <input id="prodFilterId" type="number" min="1" placeholder="Filter by Product ID">
@@ -63,7 +63,6 @@
 
       <div id="productsWrap" class="grid"></div>
 
-      <!-- pager en altta -->
       <div id="productsPager" class="row center" hidden>
         <button class="btn secondary" id="prodPrev">Prev</button>
         <span class="badge" id="prodPageInfo"></span>
@@ -71,7 +70,6 @@
       </div>
     </section>
 
-    <!-- ORDERS -->
     <section id="tab-orders" class="tab-content">
       <div class="toolbar">
         <input id="ordFilterId" type="number" min="1" placeholder="Filter by Order ID">
@@ -90,7 +88,6 @@
       </div>
     </section>
 
-    <!-- USERS -->
     <section id="tab-users" class="tab-content">
       <div class="toolbar">
         <div class="spacer"></div>
@@ -107,7 +104,6 @@
     </section>
   </main>
 
-  <!-- Product Create/Edit Dialog -->
   <dialog id="productDialog">
     <form id="productForm" class="form">
       <h3 id="productFormTitle" style="margin:0 0 6px 0;color:#3b4465;">New Product</h3>

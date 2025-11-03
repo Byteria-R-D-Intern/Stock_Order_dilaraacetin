@@ -26,7 +26,6 @@
     window.location.replace("/login.html");
   }
 
-  // ---- JWT helpers ----
   function b64urlToStr(b64url){
     try{
       const pad = '='.repeat((4 - (b64url.length % 4)) % 4);
@@ -67,7 +66,6 @@
     else el.classList.add("hidden");
   }
 
-  // ---- Notifications badge helpers ----
   let __notifTimer = null;
 
   async function refreshUnreadBadge() {
@@ -86,7 +84,6 @@
         badge.style.display = "none";
       }
     } catch {
-      // sessizce yoksay
     }
   }
 
@@ -99,7 +96,6 @@
     });
   }
 
-  // global
   window.__auth = {
     getAuth,
     requireAuthOrRedirect,
@@ -109,7 +105,6 @@
     rolesFromToken,
     isAdmin,
     ensureAdminButton,
-    // notifications
     refreshUnreadBadge,
     wireNotificationsBadge
   };

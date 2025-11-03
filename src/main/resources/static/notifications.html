@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notifications • Stock Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <style>
+    body { background:#3b4465; }
+    .page-wrap{
+      max-width: 980px;
+      margin: 20px auto 40px;
+      padding: 0 16px 40px;
+    }
+    .toolbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .toolbar .spacer{flex:1}
+    .select{
+      height:36px;
+      border-radius:8px;
+      border:1px solid #cddbef;
+      background:#fff;
+      color:#3b4465;
+      padding:0 10px;
+    }
+    .flash{margin-bottom:14px;}
+    .date-group{margin-top:10px;}
+    .date-title{
+      color:#fff;
+      font-weight:700;
+      margin:14px 0 8px;
+      font-size:16px;
+    }
+    .note{
+      background:#fff;
+      color:#3b4465;
+      border-radius:14px;
+      box-shadow:0 4px 18px rgba(0,0,0,.15);
+      padding:14px 16px 12px;
+      margin-bottom:10px;
+    }
+    .note.is-read{opacity:.8;}
+    .note-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .note-meta{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pill{
+      background:#e9f1ff;
+      border:1px solid #d2dcef;
+      border-radius:999px;
+      padding:3px 10px;
+      font-size:11px;
+      font-weight:600;
+      color:#2e3a62;
+      letter-spacing:.2px;
+    }
+    .time{font-size:12px;color:#8aa;}
+    .note-actions{display:flex;gap:6px;}
+    .note-title{
+      font-weight:700;
+      margin-top:8px;
+      margin-bottom:4px;
+      font-size:14px;
+    }
+    .note-text{
+      margin:0;
+      font-size:13px;
+      color:#4a5668;
+      line-height:1.4;
+    }
+    #pager{
+      margin-top:16px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+    }
+    @media(max-width:640px){
+      .note-top{flex-direction:column;align-items:flex-start;}
+      .toolbar{flex-direction:row;}
+      .note-actions{margin-top:4px;}
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><a href="/products.html" style="color:inherit;text-decoration:none;">Stock Order</a></div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <a class="btn ghost" href="/products.html">Products</a>
+    <a class="btn ghost" href="/cart.html">Cart</a>
+    <a class="btn ghost" href="/profile.html">Profile</a>
+    <button id="logoutBtn" class="btn danger">Logout</button>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <h1>Notifications</h1>
+
+  <div class="toolbar">
+    <span id="unreadBadge" class="btn ghost" style="background:#fff;">Unread: 0</span>
+    <select id="filterUnread" class="select">
+      <option value="all">All</option>
+      <option value="unread">Only unread</option>
+    </select>
+    <select id="filterType" class="select">
+      <option value="ALL">All types</option>
+      <option value="ORDER">Order</option>
+      <option value="PAYMENT">Payment</option>
+      <option value="PRODUCT">Product</option>
+      <option value="ACCOUNT">Account</option>
+    </select>
+    <button id="markAllBtn" class="btn ghost">Mark all as read</button>
+    <button id="reloadBtn" class="btn ghost">Reload</button>
+    <div class="spacer"></div>
+    <label style="display:flex;align-items:center;gap:6px;color:#fff;font-size:13px;">
+      Page size
+      <select id="pageSize" class="select">
+        <option>10</option><option selected>20</option><option>40</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="flash" class="flash" hidden></div>
+
+  <div id="list"></div>
+
+  <div id="pager"></div>
+</main>
+
+<script src="/js/common.js"></script>
+<script src="/js/notifications.js"></script>
+</body>
+</html>

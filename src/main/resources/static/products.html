@@ -6,35 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/css/products.css" />
   <link rel="stylesheet" href="/css/base.css" />
+  <style>
+    .pager {display:flex;justify-content:center;align-items:center;gap:8px;margin:16px 0;}
+    .badge {background:#eef;border-radius:12px;padding:3px 10px;}
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">Stock Order</div>
-    <div class="spacer"></div>
-    <div class="actions">
-      <span id="userEmail" class="user"></span>
-      <a id="adminBtn" class="btn ghost hidden" href="/admin.html">Admin</a>
-      <a class="btn ghost" href="/profile.html">Profile</a>
-      <a class="btn ghost" href="/notifications.html">Notifications</a>
-      <a class="btn secondary" href="/cart.html" id="cartBtn">
-        Cart <span id="cartCount" class="badge">0</span>
-      </a>
-      <button id="logoutBtn" class="btn danger">Logout</button>
-    </div>
-  </header>
+<header class="topbar">
+  <div class="brand">Stock Order</div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <span id="userEmail" class="user"></span>
+    <a id="adminBtn" class="btn ghost hidden" href="/admin.html">Admin</a>
+    <a class="btn ghost" href="/profile.html">Profile</a>
+    <a class="btn ghost" href="/notifications.html">Notifications</a>
+    <a class="btn secondary" href="/cart.html" id="cartBtn">
+      Cart <span id="cartCount" class="badge">0</span>
+    </a>
+    <button id="logoutBtn" class="btn danger">Logout</button>
+  </div>
+</header>
 
-  <main class="content">
-    <h1 class="page-title">Products</h1>
-    <div class="row" style="gap:8px;align-items:center;margin-bottom:8px">
-      <input id="searchById" class="qty" type="number" min="1" placeholder="Search by ID" />
-      <button id="searchBtn" class="btn secondary">Search</button>
-      <button id="clearSearchBtn" class="btn ghost">Clear</button>
-    </div>
-    <div id="msg" class="msg"></div>
-    <div class="grid" id="productsGrid"></div>
-  </main>
+<main class="content">
+  <h1 class="page-title">Products</h1>
 
-  <script src="/js/common.js"></script>
-  <script src="/js/products.js"></script>
+  <div class="toolbar" style="margin-bottom:10px;">
+    <input id="prodFilterId" type="number" min="1" placeholder="Filter by Product ID" class="btn ghost" />
+    <button id="applyProdFilter" class="btn secondary">Apply</button>
+    <button id="clearProdFilter" class="btn ghost">Clear</button>
+    <span id="prodCount" class="badge"></span>
+  </div>
+
+  <div id="msg" class="msg"></div>
+  <div id="productsGrid" class="grid"></div>
+
+  <!-- Pagination -->
+  <div id="productsPager" class="pager">
+    <button class="btn secondary" id="prodPrev">Prev</button>
+    <span class="badge" id="prodPageInfo"></span>
+    <button class="btn secondary" id="prodNext">Next</button>
+  </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script src="/js/products.js"></script>
 </body>
 </html>
