@@ -3,6 +3,7 @@ package com.example.stock_order.application;
 import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,10 @@ public class AuditLogService {
 
         auditRepo.save(e);
     }
-
+    @Transactional(readOnly = true)
+    public java.util.List<AuditLogEntity> findAll() {
+        return auditRepo.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void logWithActor(Long actorUserId, String actorEmail, String action, String entityType, Long entityId, Map<String, Object> details) {
         String detailsJson = null;

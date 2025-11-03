@@ -1,15 +1,10 @@
 (() => {
-  const $  = (sel) => document.querySelector(sel);
+  const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
-
-  const esc = (s) =>
-    String(s ?? "").replace(/[&<>"']/g, (m) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])
-    );
-
-  const money = (n) =>
-    new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(n || 0));
-
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[m]));
+  const money = (n) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(n || 0));
   const flash = (msg, type = "ok") => {
     const el = document.createElement("div");
     el.className = `flash ${type}`;
@@ -17,7 +12,6 @@
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 2500);
   };
-
   const api = async (url, options = {}) => {
     const res = await fetch(url, {
       ...options,
@@ -57,15 +51,15 @@
 
   const state = {
     size: 20,
-
     productsAll: [],
     productsPage: 0,
-
     ordersAll: [],
     ordersPage: 0,
-
     usersAll: [],
     usersPage: 0,
+    logsAll: [],        
+    logsPage: 0,        
+    logsSize: 20        
   };
 
   $$(".tab").forEach((btn) => {
@@ -83,7 +77,6 @@
     state.productsPage = 0;
     renderProducts();
   }
-
   async function loadProductById(id) {
     try {
       const p = await api(`/api/products/${id}`);
@@ -94,14 +87,11 @@
       flash("Product not found", "error");
     }
   }
-
   function renderProducts() {
     const wrap = $("#productsWrap");
     wrap.innerHTML = "";
-
     const meta = paginate(state.productsAll, state.productsPage, state.size);
     $("#prodCount").textContent = `${meta.totalElements} item(s)`;
-
     if (!meta.content.length) {
       wrap.innerHTML = `<div class="card muted">No products</div>`;
     } else {
@@ -126,19 +116,10 @@
         `;
         wrap.appendChild(card);
       });
-
-      wrap.querySelectorAll(".inc").forEach((b) =>
-        b.addEventListener("click", () => adjustStock(b.dataset.id, "increase"))
-      );
-      wrap.querySelectorAll(".dec").forEach((b) =>
-        b.addEventListener("click", () => adjustStock(b.dataset.id, "decrease"))
-      );
-      wrap.querySelectorAll(".del").forEach((b) =>
-        b.addEventListener("click", () => deleteProduct(b.dataset.id))
-      );
-      wrap.querySelectorAll(".edit").forEach((b) =>
-        b.addEventListener("click", () => openProductDialog("edit", b.dataset.id))
-      );
+      wrap.querySelectorAll(".inc").forEach((b) => b.addEventListener("click", () => adjustStock(b.dataset.id, "increase")));
+      wrap.querySelectorAll(".dec").forEach((b) => b.addEventListener("click", () => adjustStock(b.dataset.id, "decrease")));
+      wrap.querySelectorAll(".del").forEach((b) => b.addEventListener("click", () => deleteProduct(b.dataset.id)));
+      wrap.querySelectorAll(".edit").forEach((b) => b.addEventListener("click", () => openProductDialog("edit", b.dataset.id)));
     }
 
     const pager = $("#productsPager");
@@ -159,7 +140,6 @@
       }
     };
   }
-
   async function adjustStock(id, action) {
     const delta = Number($(`#delta-${id}`).value || 0);
     if (!Number.isFinite(delta) || delta <= 0) return flash("Enter positive delta", "error");
@@ -170,14 +150,12 @@
     flash(`Stock ${action}d`, "ok");
     await loadAllProducts();
   }
-
   async function deleteProduct(id) {
     if (!confirm("Delete product?")) return;
     await api(`/api/products/${id}`, { method: "DELETE" });
     flash("Deleted", "ok");
     await loadAllProducts();
   }
-
   function openProductDialog(mode, id = null) {
     const dlg = $("#productDialog");
     const form = $("#productForm");
@@ -185,7 +163,6 @@
     form.editingId.value = id || "";
     $("#productFormTitle").textContent = mode === "edit" ? "Edit Product" : "New Product";
     $("#initialQtyRow").style.display = mode === "edit" ? "none" : "grid";
-
     if (mode === "edit" && id) {
       const prod = state.productsAll.find((x) => String(x.id) === String(id));
       if (prod) {
@@ -196,10 +173,8 @@
         form.status.value = (prod.status || "ACTIVE");
       }
     }
-
     dlg.showModal();
   }
-
   async function submitProductForm(ev) {
     ev.preventDefault();
     const form = ev.target;
@@ -211,7 +186,6 @@
       price: Number(form.price.value),
       status: form.status.value || "ACTIVE",
     };
-
     try {
       if (editingId) {
         const payload = {
@@ -220,14 +194,20 @@
           price: bodyCommon.price,
           status: bodyCommon.status,
         };
-        await api(`/api/products/${editingId}`, { method: "PUT", body: JSON.stringify(payload) });
+        await api(`/api/products/${editingId}`, {
+          method: "PUT",
+          body: JSON.stringify(payload)
+        });
         flash("Product updated", "ok");
       } else {
         const payload = {
           ...bodyCommon,
           initialQuantity: Number(form.initialQuantity.value || 0),
         };
-        await api(`/api/products`, { method: "POST", body: JSON.stringify(payload) });
+        await api(`/api/products`, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
         flash("Product created", "ok");
       }
       $("#productDialog").close();
@@ -243,7 +223,6 @@
     state.ordersPage = 0;
     renderOrders();
   }
-
   async function loadOrderById(id) {
     try {
       const o = await api(`/api/admin/orders/${id}`);
@@ -254,14 +233,11 @@
       flash("Order not found", "error");
     }
   }
-
   function renderOrders() {
     const wrap = $("#ordersWrap");
     wrap.innerHTML = "";
-
     const meta = paginate(state.ordersAll, state.ordersPage, state.size);
     $("#ordCount").textContent = `${meta.totalElements} order(s)`;
-
     if (!meta.content.length) {
       wrap.innerHTML = `<div class="card muted">No orders</div>`;
     } else {
@@ -280,17 +256,15 @@
         `;
         wrap.appendChild(card);
       });
-
-      wrap.querySelectorAll(".save-status").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const st = $(`#st-${b.dataset.id}`).value;
-          await api(`/api/admin/orders/${b.dataset.id}/status?status=${encodeURIComponent(st)}`, { method: "POST" });
-          flash("Order updated", "ok");
-          await loadAllOrders();
-        })
-      );
+      wrap.querySelectorAll(".save-status").forEach((b) => b.addEventListener("click", async () => {
+        const st = $(`#st-${b.dataset.id}`).value;
+        await api(`/api/admin/orders/${b.dataset.id}/status?status=${encodeURIComponent(st)}`, {
+          method: "POST"
+        });
+        flash("Order updated", "ok");
+        await loadAllOrders();
+      }));
     }
-
     const pager = $("#ordersPager");
     pager.hidden = meta.totalPages <= 1;
     $("#ordPageInfo").textContent = `Page ${meta.page + 1} / ${meta.totalPages}`;
@@ -316,14 +290,11 @@
     state.usersPage = 0;
     renderUsers();
   }
-
   function renderUsers() {
     const wrap = $("#usersWrap");
     wrap.innerHTML = "";
-
     const meta = paginate(state.usersAll, state.usersPage, state.size);
     $("#usrCount").textContent = `${meta.totalElements} user(s)`;
-
     if (!meta.content.length) {
       wrap.innerHTML = `<div class="card muted">No users</div>`;
     } else {
@@ -338,45 +309,35 @@
               <option value="ADMIN" ${u.role==="ADMIN"?"selected":""}>ADMIN</option>
             </select>
             <button data-id="${u.id}" class="btn primary change-role">Save</button>
-            ${
-              u.active
-                ? `<button data-id="${u.id}" class="btn warning deact">Deactivate</button>`
-                : `<button data-id="${u.id}" class="btn primary act">Activate</button>`
+            ${ u.active
+              ? `<button data-id="${u.id}" class="btn warning deact">Deactivate</button>`
+              : `<button data-id="${u.id}" class="btn primary act">Activate</button>`
             }
           </div>
         `;
         wrap.appendChild(card);
       });
 
-      wrap.querySelectorAll(".change-role").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const role = $(`#role-${b.dataset.id}`).value;
-          await api(`/api/admin/users/${b.dataset.id}/role`, {
-            method: "PUT",
-            body: JSON.stringify({ role }),
-          });
-          flash("Role updated", "ok");
-          await loadUsers();
-        })
-      );
-
-      wrap.querySelectorAll(".act").forEach((b) =>
-        b.addEventListener("click", async () => {
-          await api(`/api/admin/users/${b.dataset.id}/activate`, { method: "PUT" });
-          flash("User activated", "ok");
-          await loadUsers();
-        })
-      );
-
-      wrap.querySelectorAll(".deact").forEach((b) =>
-        b.addEventListener("click", async () => {
-          await api(`/api/admin/users/${b.dataset.id}/deactivate`, { method: "PUT" });
-          flash("User deactivated", "ok");
-          await loadUsers();
-        })
-      );
+      wrap.querySelectorAll(".change-role").forEach((b) => b.addEventListener("click", async () => {
+        const role = $(`#role-${b.dataset.id}`).value;
+        await api(`/api/admin/users/${b.dataset.id}/role`, {
+          method: "PUT",
+          body: JSON.stringify({ role }),
+        });
+        flash("Role updated", "ok");
+        await loadUsers();
+      }));
+      wrap.querySelectorAll(".act").forEach((b) => b.addEventListener("click", async () => {
+        await api(`/api/admin/users/${b.dataset.id}/activate`, { method: "PUT" });
+        flash("User activated", "ok");
+        await loadUsers();
+      }));
+      wrap.querySelectorAll(".deact").forEach((b) => b.addEventListener("click", async () => {
+        await api(`/api/admin/users/${b.dataset.id}/deactivate`, { method: "PUT" });
+        flash("User deactivated", "ok");
+        await loadUsers();
+      }));
     }
-
     const pager = $("#usersPager");
     pager.hidden = meta.totalPages <= 1;
     $("#usrPageInfo").textContent = `Page ${meta.page + 1} / ${meta.totalPages}`;
@@ -396,6 +357,65 @@
     };
   }
 
+  async function loadLogs() {
+    try {
+      const list = await api("/api/notifications/admin/audit");
+      state.logsAll = Array.isArray(list) ? list : [];
+      state.logsPage = 0;
+      renderLogs();
+    } catch (e) {
+      flash(e.message || "Could not load logs", "error");
+      state.logsAll = [];
+      state.logsPage = 0;
+      renderLogs();
+    }
+  }
+
+  function renderLogs() {
+    const wrap = $("#logsWrap");
+    const pager = $("#logsPager");
+    wrap.innerHTML = "";
+    const meta = paginate(state.logsAll, state.logsPage, state.logsSize);
+    $("#logCount").textContent = `${meta.totalElements} log(s)`;
+
+    if (!meta.content.length) {
+      wrap.innerHTML = `<div class="card muted">No logs</div>`;
+      pager.innerHTML = "";
+      return;
+    }
+
+    meta.content.forEach((log) => {
+      const div = document.createElement("div");
+      div.className = "log-item";
+      const dateStr = log.createdAt ? new Date(log.createdAt).toLocaleString() : "";
+      div.innerHTML = `
+        <div class="log-top">
+          <span class="tag">${esc(log.action || "ACTION")}</span>
+          ${log.entityType ? `<span class="tag">Entity: ${esc(log.entityType)}</span>` : ""}
+          ${log.entityId != null ? `<span class="tag">ID: ${esc(log.entityId)}</span>` : ""}
+          ${dateStr ? `<span class="muted small">${esc(dateStr)}</span>` : ""}
+        </div>
+        <div class="small muted">
+          Actor: ${log.actorEmail ? esc(log.actorEmail) : "unknown"} ${log.actorUserId ? `(id=${log.actorUserId})` : ""}
+        </div>
+        ${log.details ? `<pre style="white-space:pre-wrap;font-size:12px;margin-top:6px;background:#f5f7ff;padding:6px;border-radius:6px;">${esc(log.details)}</pre>` : ""}
+      `;
+      wrap.appendChild(div);
+    });
+
+    pager.innerHTML = `
+      <button class="btn ghost first" ${meta.hasPrevious ? "" : "disabled"}>« First</button>
+      <button class="btn ghost prev" ${meta.hasPrevious ? "" : "disabled"}>‹ Prev</button>
+      <span class="btn ghost" style="background:#fff;color:#3b4465;">Page ${meta.page+1} / ${meta.totalPages}</span>
+      <button class="btn ghost next" ${meta.hasNext ? "" : "disabled"}>Next ›</button>
+      <button class="btn ghost last" ${meta.hasNext ? "" : "disabled"}>Last »</button>
+    `;
+    pager.querySelector(".first").onclick = () => { state.logsPage = 0; renderLogs(); };
+    pager.querySelector(".prev").onclick  = () => { if (meta.hasPrevious){ state.logsPage--; renderLogs(); } };
+    pager.querySelector(".next").onclick  = () => { if (meta.hasNext){ state.logsPage++; renderLogs(); } };
+    pager.querySelector(".last").onclick  = () => { state.logsPage = meta.totalPages - 1; renderLogs(); };
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
     const a = window.__auth.requireAuthOrRedirect();
     if (!a) return;
@@ -403,7 +423,6 @@
       window.location.replace("/products.html");
       return;
     }
-
     $("#logoutBtn")?.addEventListener("click", window.__auth.logout);
 
     $("#btnNewProduct")?.addEventListener("click", () => openProductDialog("create"));
@@ -439,5 +458,6 @@
     await loadAllProducts();
     await loadAllOrders();
     await loadUsers();
+    await loadLogs(); 
   });
 })();

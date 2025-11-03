@@ -5,11 +5,10 @@
     all: [],
     page: 0,
     size: 20,
-    filterUnread: "all",     // "all" | "unread"
-    filterType: "ALL"        // ALL | ORDER | PAYMENT | PRODUCT | ACCOUNT
+    filterUnread: "all",    
+    filterType: "ALL"       
   };
 
-  // fetch helper: boş 200/204 destekli
   async function api(url, opts = {}) {
     const res = await fetch(url, {
       ...opts,
@@ -95,7 +94,6 @@
     const filtered = applyFilters();
     const meta = paginate(filtered, state.page, state.size);
 
-    // unread badge
     const unread = state.all.filter(n => !n.read).length;
     unreadBadge.textContent = `Unread: ${unread}`;
 
@@ -128,7 +126,6 @@
           <div class="note-title">${esc(n.title)}</div>
           <p class="note-text">${esc(n.message)}</p>
         `;
-        // read
         card.querySelector(".btn-read").addEventListener("click", async () => {
           try {
             await api(`/api/notifications/${n.id}/read`, { method:"PUT" });
@@ -139,7 +136,6 @@
             flash("Could not mark as read");
           }
         });
-        // delete
         card.querySelector(".btn-del").addEventListener("click", async () => {
           if (!confirm("Delete this notification?")) return;
           try {

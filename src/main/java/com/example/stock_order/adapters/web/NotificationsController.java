@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.notification.NotificationResponse;
+import com.example.stock_order.application.AuditLogService;
 import com.example.stock_order.application.NotificationService;
 import com.example.stock_order.domain.model.User;
 import com.example.stock_order.domain.ports.repository.UserRepository;
+import com.example.stock_order.infrastructure.persistence.entity.AuditLogEntity;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class NotificationsController {
 
     private final NotificationService notifications;
     private final UserRepository users;
+    private final AuditLogService auditLogService;
 
     private Long currentUserId(Authentication auth) {
         String email = auth.getName();
@@ -70,6 +73,12 @@ public class NotificationsController {
     public ResponseEntity<Void> delete(Authentication auth, @PathVariable Long id) {
         notifications.delete(currentUserId(auth), id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/admin/audit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AuditLogEntity>> allAuditLogs() {
+        return ResponseEntity.ok(auditLogService.findAll());
     }
 
 }

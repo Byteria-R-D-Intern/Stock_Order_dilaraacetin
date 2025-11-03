@@ -40,8 +40,9 @@ public class SecurityConfig {
                     "/cart.html",
                     "/checkout.html",
                     "/profile.html",
-                    "/notifications.html", // <- BUNU EKLE
+                    "/notifications.html", 
                     "/admin.html",
+                    "/admin-logs.html",
                     "/css/**",
                     "/js/**",
                     "/images/**",

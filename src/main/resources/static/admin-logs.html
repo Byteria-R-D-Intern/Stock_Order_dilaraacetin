@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin • Audit Logs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <style>
+    .page {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .toolbar .spacer { flex: 1; }
+    .logs-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      color: #3b4465;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,.15);
+    }
+    .logs-table th, .logs-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      font-size: 13px;
+    }
+    .logs-table th {
+      background: #f3f6ff;
+      font-weight: 600;
+    }
+    .logs-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .muted-small {
+      color: #8aa;
+      font-size: 12px;
+    }
+    .pager {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Stock Order • Admin</div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <a class="btn ghost" href="/admin.html">Admin Panel</a>
+      <a class="btn ghost" href="/products.html">Products</a>
+      <button id="logoutBtn" class="btn danger">Logout</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Audit Logs</h1>
+    <div id="flash" class="flash" hidden></div>
+    <div class="toolbar">
+      <span class="muted small">Her sayfa 20 kayıt gösterir.</span>
+      <div class="spacer"></div>
+      <span id="logsCount" class="muted small"></span>
+      <button id="reloadBtn" class="btn ghost">Yenile</button>
+    </div>
+    <div id="logsWrap"></div>
+    <div id="logsPager" class="pager"></div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-logs.js"></script>
+</body>
+</html>
