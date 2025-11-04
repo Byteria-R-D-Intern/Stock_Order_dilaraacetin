@@ -22,6 +22,7 @@ import com.example.stock_order.application.NotificationService;
 import com.example.stock_order.application.TokenizationService;
 import com.example.stock_order.domain.ports.repository.UserRepository;
 import com.example.stock_order.infrastructure.persistence.entity.SavedPaymentMethodEntity;
+import com.example.stock_order.infrastructure.persistence.springdata.PaymentTokenJpaRepository;
 import com.example.stock_order.infrastructure.persistence.springdata.SavedPaymentMethodJpaRepository;
 
 import jakarta.validation.Valid;
@@ -38,6 +39,7 @@ public class PaymentController {
     private final NotificationService notifications;
     private final UserRepository users;
     private final SavedPaymentMethodJpaRepository savedRepo;
+    private final PaymentTokenJpaRepository paymentTokenRepo;
 
     private Long currentUserId(Authentication auth){
         String email = auth.getName();
@@ -45,15 +47,23 @@ public class PaymentController {
                 .map(u -> u.getId())
                 .orElseThrow(() -> new IllegalArgumentException("kullanıcı bulunamadı"));
     }
-
     @PostMapping("/tokenize")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<TokenizeCardResponse> tokenize(Authentication auth,
-                                                         @RequestBody @Valid TokenizeCardRequest req) {
+                                                        @RequestBody @Valid TokenizeCardRequest req) {
         var rec = tokenization.tokenize(req.cardNumber(), req.expiryMonth(), req.expiryYear(), req.cvv());
         audit.log("TOKENIZE_CARD", "PAYMENT_TOKEN", null, null);
 
         Long uid = currentUserId(auth);
+
+        var pt = new com.example.stock_order.infrastructure.persistence.entity.PaymentTokenEntity();
+        pt.setUserId(uid);
+        pt.setToken(rec.token());
+        pt.setLast4(rec.last4());
+        pt.setBrand(rec.brand());
+        pt.setExpiresAt(java.time.Instant.ofEpochMilli(rec.expiresAtEpochMs()));
+        paymentTokenRepo.save(pt);  
+
         if (req.save()) {
             var spm = new SavedPaymentMethodEntity();
             spm.setUserId(uid);
@@ -107,6 +117,6 @@ public class PaymentController {
                     "Your saved card •••• " + e.getLast4() + " was removed.");
         } catch (Exception ignore) { }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

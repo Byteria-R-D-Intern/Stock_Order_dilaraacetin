@@ -20,6 +20,8 @@ public class AdjustStockUseCase {
     private final ProductStockRepository stocks;
     private final AuditLogService audit;
 
+    private static final long AUDIT_STOCK_THRESHOLD = 50L;
+
     @Transactional
     public ProductStock increase(Long productId, long delta) {
         if (delta <= 0) throw new IllegalArgumentException("delta > 0 olmalı");
@@ -27,7 +29,17 @@ public class AdjustStockUseCase {
         var stock = stocks.findByProductId(productId).orElseThrow(() -> new NotFoundException("stok bulunamadı"));
         stock.setQuantityOnHand(stock.getQuantityOnHand() + delta);
         var saved = stocks.save(stock);
-        audit.log("STOCK_INCREASED", "PRODUCT", productId, Map.of("delta", delta, "newQty", saved.getQuantityOnHand()));
+         if (delta > AUDIT_STOCK_THRESHOLD) {
+            audit.log(
+                    "STOCK_INCREASED",
+                    "PRODUCT",
+                    productId,
+                    Map.of(
+                        "delta", delta,
+                        "newQty", saved.getQuantityOnHand()
+                    )
+            );
+        }
         return saved;
     }
 
@@ -40,7 +52,17 @@ public class AdjustStockUseCase {
         if (newQty < 0) throw new IllegalStateException("yetersiz stok miktarı");
         stock.setQuantityOnHand(newQty);
         var saved = stocks.save(stock);
-        audit.log("STOCK_DECREASED", "PRODUCT", productId, Map.of("delta", delta, "newQty", saved.getQuantityOnHand()));
+        if (delta > AUDIT_STOCK_THRESHOLD) {
+            audit.log(
+                    "STOCK_DECREASED",
+                    "PRODUCT",
+                    productId,
+                    Map.of(
+                        "delta", delta,
+                        "newQty", saved.getQuantityOnHand()
+                    )
+            );
+        }
         return saved;
     }
 }

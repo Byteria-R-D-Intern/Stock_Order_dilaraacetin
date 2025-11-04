@@ -125,7 +125,7 @@ public class ProductController {
         stocks.deleteByProductId(id);
         products.deleteById(id);
         audit.log("PRODUCT_DELETED", "PRODUCT", id, null);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.stock_order.infrastructure.persistence.springdata.PaymentTokenJpaRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -12,15 +14,24 @@ import lombok.RequiredArgsConstructor;
 public class PaymentService {
 
     private final TokenizationService tokenization;
+    private final PaymentTokenJpaRepository paymentTokenRepo;
 
-     public ChargeResult chargeOneTime(String token, BigDecimal amount, String currency) {
+    public ChargeResult chargeOneTime(String token, BigDecimal amount, String currency) {
         if (amount == null || amount.signum() <= 0) {
             throw new IllegalArgumentException("invalid_amount");
         }
-        var dt = tokenization.detokenize(token); 
-        tokenization.revoke(token);              
+
+        var dt = tokenization.detokenize(token);
+
+        paymentTokenRepo.findByToken(token).ifPresent(e -> {
+            e.setUsedAt(java.time.Instant.now());
+            paymentTokenRepo.save(e);
+        });
+
+        tokenization.revoke(token);
+
         return new ChargeResult(
-                UUID.randomUUID().toString(),
+                java.util.UUID.randomUUID().toString(),
                 "SUCCEEDED",
                 amount,
                 currency,
