@@ -1,6 +1,5 @@
 package com.example.stock_order.adapters.web;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.user.UpdateUserRoleRequest;
+import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.application.AuditLogService;
 import com.example.stock_order.domain.ports.repository.UserRepository;
 
@@ -34,58 +34,66 @@ public class AdminController {
 
     @PutMapping("/users/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateRole(@PathVariable Long id,
-                                        @RequestBody @Valid UpdateUserRoleRequest req) {
-        return users.findById(id)
-                .map(u -> {
-                    var oldRole = u.getRole().name();
-                    u.setRole(req.role());
-                    var saved = users.save(u);
+    public ResponseEntity<Void> updateRole(@PathVariable Long id,
+                                           @RequestBody @Valid UpdateUserRoleRequest req) {
+        var u = users.findById(id)
+                .orElseThrow(() -> new NotFoundException("user not found"));
 
-                    audit.log("USER_ROLE_CHANGED", "USER", saved.getId(),
-                              Map.of("oldRole", oldRole, "newRole", saved.getRole().name(), "email", saved.getEmail()));
+        var oldRole = u.getRole().name();
+        u.setRole(req.role());
+        var saved = users.save(u);
 
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        audit.log(
+                "USER_ROLE_CHANGED",
+                "USER",
+                saved.getId(),
+                Map.of(
+                        "oldRole", oldRole,
+                        "newRole", saved.getRole().name(),
+                        "email", saved.getEmail()
+                )
+        );
+
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/users/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> activate(@PathVariable Long id) {
-        return users.findById(id).map(u -> {
-            u.setActive(true);
-            users.save(u);
-            audit.log("USER_ACTIVATED", "USER", u.getId(), Map.of("email", u.getEmail()));
-            return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> activate(@PathVariable Long id) {
+        var u = users.findById(id)
+                .orElseThrow(() -> new NotFoundException("user not found"));
+
+        u.setActive(true);
+        users.save(u);
+        audit.log("USER_ACTIVATED", "USER", u.getId(), Map.of("email", u.getEmail()));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/users/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deactivate(@PathVariable Long id) {
-        return users.findById(id).map(u -> {
-            u.setActive(false);
-            users.save(u);
-            audit.log("USER_DEACTIVATED", "USER", u.getId(), Map.of("email", u.getEmail()));
-            return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+        var u = users.findById(id)
+                .orElseThrow(() -> new NotFoundException("user not found"));
+
+        u.setActive(false);
+        users.save(u);
+        audit.log("USER_DEACTIVATED", "USER", u.getId(), Map.of("email", u.getEmail()));
+        return ResponseEntity.ok().build();
     }
+
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> listUsers() {
         var list = users.findAll().stream()
-            .map(u -> Map.<String, Object>of(
-                "id", u.getId(),
-                "email", u.getEmail(),
-                "role", u.getRole().name(),
-                "active", u.isActive(),
-                "createdAt", u.getCreatedAt(),
-                "updatedAt", u.getUpdatedAt()
-            ))
-            .toList();
+                .map(u -> Map.<String, Object>of(
+                        "id", u.getId(),
+                        "email", u.getEmail(),
+                        "role", u.getRole().name(),
+                        "active", u.isActive(),
+                        "createdAt", u.getCreatedAt(),
+                        "updatedAt", u.getUpdatedAt()
+                ))
+                .toList();
         return ResponseEntity.ok(list);
     }
-
-
 }

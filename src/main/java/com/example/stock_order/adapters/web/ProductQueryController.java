@@ -3,12 +3,14 @@ package com.example.stock_order.adapters.web;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.product.ProductResponse;
+import com.example.stock_order.adapters.web.exception.NotFoundException;
 import com.example.stock_order.domain.ports.repository.ProductRepository;
 import com.example.stock_order.domain.ports.repository.ProductStockRepository;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/catalog")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class ProductQueryController {
 
     private final ProductRepository products;
@@ -37,14 +40,20 @@ public class ProductQueryController {
 
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponse> get(@PathVariable Long id) {
-        return products.findById(id)
-                .map(p -> {
-                    Long qoh = stocks.findByProductId(p.getId())
-                            .map(s -> s.getQuantityOnHand())
-                            .orElse(0L);
-                    return ProductResponse.of(p, qoh);
-                })
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return products.findById(id)
+                    .map(p -> {
+                        Long qoh = stocks.findByProductId(p.getId())
+                                .map(s -> s.getQuantityOnHand())
+                                .orElse(0L);
+                        return ProductResponse.of(p, qoh);
+                    })
+                    .map(ResponseEntity::ok)
+                    .orElseThrow(() -> new NotFoundException("product not found"));
+        } catch (NotFoundException e) {
+            throw e; 
+        } catch (Exception e) {
+            throw new IllegalArgumentException("invalid product id");
+        }
     }
 }

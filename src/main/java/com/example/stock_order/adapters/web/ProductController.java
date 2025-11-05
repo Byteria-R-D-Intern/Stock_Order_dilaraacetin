@@ -1,5 +1,6 @@
 package com.example.stock_order.adapters.web;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stock_order.adapters.web.dto.product.AdjustStockRequest;
+import com.example.stock_order.adapters.web.dto.product.ChangeStatusRequest;
 import com.example.stock_order.adapters.web.dto.product.CreateProductRequest;
 import com.example.stock_order.adapters.web.dto.product.ProductResponse;
 import com.example.stock_order.adapters.web.dto.product.ProductUpdateRequest;
@@ -46,9 +48,10 @@ public class ProductController {
     private final ProductStockRepository stocks;
     private final AuditLogService audit;
 
-    @GetMapping
-    public ResponseEntity<List<ProductResponse>> listActiveWithStock() {
-        var list = products.findAllActive().stream()
+    @GetMapping 
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProductResponse>> listAllWithStock() {
+        var list = products.findAll().stream()
                 .map(p -> {
                     Long qoh = stocks.findByProductId(p.getId())
                             .map(s -> s.getQuantityOnHand())
@@ -60,6 +63,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
         var p = products.findById(id).orElseThrow(() -> new NotFoundException("product not found"));
         Long qoh = stocks.findByProductId(id).map(s -> s.getQuantityOnHand()).orElse(0L);
@@ -69,6 +73,9 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> create(@RequestBody @Valid CreateProductRequest req) {
+        if (req.price() == null || req.price().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("price_must_be_positive");
+        }
         var p = createProduct.handle(
                 req.sku(),
                 req.name(),
@@ -99,8 +106,11 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id,
-                                                  @RequestBody @Valid ProductUpdateRequest req) {
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @RequestBody @Valid ProductUpdateRequest req) {
+        if (req.price() != null && req.price().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("price_must_be_positive");
+        }
+
         var p = products.findById(id).orElseThrow(() -> new NotFoundException("product not found"));
 
         if (req.name() != null)        p.setName(req.name());
@@ -126,6 +136,32 @@ public class ProductController {
         products.deleteById(id);
         audit.log("PRODUCT_DELETED", "PRODUCT", id, null);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponse> changeStatus(@PathVariable Long id,
+                                                        @RequestBody @Valid ChangeStatusRequest req) {
+        var p = products.findById(id).orElseThrow(() -> new NotFoundException("product not found"));
+
+        p.setStatus(req.status());
+        var saved = products.save(p);
+
+        Long qoh = stocks.findByProductId(id)
+                .map(s -> s.getQuantityOnHand())
+                .orElse(0L);
+
+        audit.log(
+                "PRODUCT_STATUS_CHANGED",
+                "PRODUCT",
+                id,
+                Map.of(
+                    "newStatus", saved.getStatus() != null ? saved.getStatus().name() : null,
+                    "stock", qoh
+                )
+        );
+
+        return ResponseEntity.ok(ProductResponse.of(saved, qoh));
     }
 
     

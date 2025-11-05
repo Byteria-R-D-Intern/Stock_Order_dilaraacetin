@@ -2,6 +2,7 @@ package com.example.stock_order.adapters.web.dto.profile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,10 +17,10 @@ public record AddressCreateRequest(
                    @Size(max = 128) String state,                 
                    @Size(max = 32)  String postalCode,           
         @NotBlank @Size(max = 64)  String country,
-
+        @Schema(example = "+905*********")
         @NotBlank
         @Size(max = 32)
-        @Pattern(regexp = "^[0-9+\\-()\\s]{7,32}$", message = "invalid_phone")
+        @Pattern(regexp = "^(\\+\\d{1,3}\\s?)?\\d{10,}$", message = "Geçerli bir telefon numarası girin")
         String phone,
 
         @NotNull

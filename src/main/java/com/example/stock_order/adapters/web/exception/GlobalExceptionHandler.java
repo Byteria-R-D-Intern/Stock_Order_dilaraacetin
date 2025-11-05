@@ -127,6 +127,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAppNotFound(NotFoundException ex, HttpServletRequest req) {
         SECURE_LOG.warn("Not found at {} : {}", req.getRequestURI(), ex.toString());
+        String msg = ex.getMessage();
+        if (msg == null || msg.isBlank()) {
+            msg = "not_found";
+        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(body(HttpStatus.NOT_FOUND, "not_found", req.getRequestURI(), null));
     }

@@ -71,9 +71,19 @@ public class NotificationsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(Authentication auth, @PathVariable Long id) {
-        notifications.delete(currentUserId(auth), id);
-        return ResponseEntity.ok().build();
+        Long uid = currentUserId(auth);
+        try {
+            notifications.delete(uid, id);
+            return ResponseEntity.ok().build();
+        } catch (com.example.stock_order.adapters.web.exception.NotFoundException ex) {
+            throw new org.springframework.security.access.AccessDeniedException("notification_not_owned");
+        } catch (java.util.NoSuchElementException ex) {
+            throw new org.springframework.security.access.AccessDeniedException("notification_not_owned");
+        } catch (IllegalArgumentException ex) {
+            throw new org.springframework.security.access.AccessDeniedException("notification_not_owned");
+        }
     }
+
 
     @GetMapping("/admin/audit")
     @PreAuthorize("hasRole('ADMIN')")

@@ -105,12 +105,19 @@ public class PaymentController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteMethod(Authentication auth, @PathVariable Long id) {
         var uid = currentUserId(auth);
-        var opt = savedRepo.findByIdAndUserIdAndActiveTrue(id, uid);
-        if (opt.isEmpty()) return ResponseEntity.notFound().build();
-        var e = opt.get();
+
+        var e = savedRepo.findByIdAndUserIdAndActiveTrue(id, uid)
+                .orElseThrow(() -> new com.example.stock_order.adapters.web.exception.NotFoundException("payment method not found"));
+
         e.setActive(false);
         savedRepo.save(e);
-        audit.log("PAYMENT_METHOD_DEACTIVATED", "PAYMENT_METHOD", e.getId(), java.util.Map.of("userId", uid));
+
+        audit.log(
+                "PAYMENT_METHOD_DEACTIVATED",
+                "PAYMENT_METHOD",
+                e.getId(),
+                java.util.Map.of("userId", uid)
+        );
 
         try {
             notifications.notifyAccount(uid, "Card removed",
@@ -119,4 +126,5 @@ public class PaymentController {
 
         return ResponseEntity.ok().build();
     }
+
 }

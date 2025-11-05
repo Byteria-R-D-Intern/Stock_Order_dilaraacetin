@@ -113,13 +113,26 @@ public class CheckoutService {
         while (true) {
             try {
                 for (OrderItem oi : snapshotItems) {
-                    ProductStock s = stocks.findByProductId(oi.getProductId())
-                            .orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı: " + oi.getProductId()));
-                    long newQty = s.getQuantityOnHand() - oi.getQuantity();
-                    if (newQty < 0) throw new IllegalArgumentException("ürün için yetersiz stok miktarı " + oi.getProductId());
-                    s.setQuantityOnHand(newQty);
-                    stocks.save(s);
+                var product = products.findById(oi.getProductId())
+                        .orElseThrow(() -> new NotFoundException("ürün bulunamadı: " + oi.getProductId()));
+
+                ProductStock s = stocks.findByProductId(oi.getProductId())
+                        .orElseThrow(() -> new NotFoundException("stok bilgisi bulunamadı: " + oi.getProductId()));
+
+                long newQty = s.getQuantityOnHand() - oi.getQuantity();
+                if (newQty < 0) {
+                    throw new IllegalArgumentException("ürün için yetersiz stok miktarı " + oi.getProductId());
                 }
+
+                s.setQuantityOnHand(newQty);
+                stocks.save(s);
+
+                if (newQty == 0 && product.getStatus() == com.example.stock_order.domain.model.Product.Status.ACTIVE) {
+                    product.setStatus(com.example.stock_order.domain.model.Product.Status.INACTIVE);
+                    products.save(product);
+                }
+            }
+
 
                 Order order = new Order();
                 order.setUserId(userId);
